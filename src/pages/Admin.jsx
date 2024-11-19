@@ -51,7 +51,11 @@ const Admin = () => {
   }
 
   const getRooms = async () => {
-    await axios.get('https://socket.amisbudi.cloud/rooms')
+    await axios.get('https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/rooms', {
+      headers: {
+        'lp3i-api-key': 'bdaeaa3274ac0f2d'
+      }
+    })
       .then((response) => {
         setRooms(response.data);
       })
@@ -62,26 +66,34 @@ const Admin = () => {
 
   const clearChats = async () => {
     const confirmed = confirm(`Apakah anda yakin akan menghapus pesan ${activeRoom.name}?`);
-    if(confirmed){
-      await axios.delete(`https://socket.amisbudi.cloud/chats/${activeRoom.token}`)
-      .then((response) => {
-        alert(response.data.message);
-        getChats(activeRoom);
+    if (confirmed) {
+      await axios.delete(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/${activeRoom.token}`, {
+        headers: {
+          'lp3i-api-key': 'bdaeaa3274ac0f2d'
+        }
       })
-      .catch((error) => {
-        console.log(error);
-      })
+        .then((response) => {
+          alert(response.data.message);
+          getChats(activeRoom);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
     }
   }
 
   const getChats = async (roomActive) => {
-    await axios.get(`https://socket.amisbudi.cloud/chats/admin/${roomActive.token}`)
+    await axios.get(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/admin/${roomActive.token}`, {
+      headers: {
+        'lp3i-api-key': 'bdaeaa3274ac0f2d'
+      }
+    })
       .then((response) => {
         const responseChat = response.data;
         setChats(responseChat);
       })
       .catch((error) => {
-        if(error.response.status == 404){
+        if (error.response.status == 404) {
           setChats([]);
         }
       })
@@ -186,11 +198,19 @@ const Admin = () => {
   const loginFunc = async (e) => {
     e.preventDefault();
     try {
-      const responseUser = await axios.post(`https://socket.amisbudi.cloud/auth/admin/login`, {
+      const responseUser = await axios.post(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/auth/admin/login`, {
         username: username,
         password: password
+      }, {
+        headers: {
+          'lp3i-api-key': 'bdaeaa3274ac0f2d'
+        }
       });
-      const responseRoom = await axios.get(`https://socket.amisbudi.cloud/rooms/${token}`)
+      const responseRoom = await axios.get(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/rooms/${token}`, {
+        headers: {
+          'lp3i-api-key': 'bdaeaa3274ac0f2d'
+        }
+      })
       const dataUser = responseUser.data;
       const dataRoom = responseRoom.data;
 
@@ -278,7 +298,7 @@ const Admin = () => {
                 <button onClick={bellPlay} type='button' className='text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-bell-ring"></i>
                 </button>
-                <a href={`https://socket.amisbudi.cloud/chats/download/${activeRoom.token}`} target='_blank' className='text-sky-700 hover:text-sky-800'>
+                <a href={`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/download/${activeRoom.token}`} target='_blank' className='text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-download"></i>
                 </a>
                 <button onClick={removeToken} type='button' className='text-sky-700 hover:text-sky-800'>
@@ -421,7 +441,7 @@ const Admin = () => {
               </div>
             </div>
             <footer className='w-full max-w-lg mx-auto bg-white py-2'>
-              <a href='https://kanglerian.github.io' target='_blank' className='block text-center text-[11px] font-medium text-gray-600'>Copyright © 2024 Lerian Febrianaa</a>
+              <a href='https://kanglerian.github.io' target='_blank' className='block text-center text-[11px] font-medium text-gray-600'>Copyright © 2024 Lerian Febriana</a>
             </footer>
           </section>
         ) : (
@@ -444,7 +464,7 @@ const Admin = () => {
                   <span>Sign In</span>
                 </button>
               </form>
-              <a href='https://kanglerian.github.io' target='_blank' className='block text-xs text-sky-400'>Copyright © 2024 Lerian Febrianaa</a>
+              <a href='https://kanglerian.github.io' target='_blank' className='block text-xs text-sky-400'>Copyright © 2024 Lerian Febriana</a>
             </div>
           </section>
         )

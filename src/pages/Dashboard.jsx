@@ -49,7 +49,11 @@ const Dashboard = () => {
   }
 
   const getRooms = async () => {
-    await axios.get('https://socket.amisbudi.cloud/rooms')
+    await axios.get('https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/rooms', {
+      headers: {
+        'lp3i-api-key': 'bdaeaa3274ac0f2d'
+      }
+    })
       .then((response) => {
         setRooms(response.data);
       })
@@ -59,13 +63,17 @@ const Dashboard = () => {
   }
 
   const getChats = async (roomActive) => {
-    await axios.get(`https://socket.amisbudi.cloud/chats/dashboard/${roomActive.token}`)
+    await axios.get(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/dashboard/${roomActive.token}`, {
+      headers: {
+        'lp3i-api-key': 'bdaeaa3274ac0f2d'
+      }
+    })
       .then((response) => {
         const responseChat = response.data;
         setChats(responseChat);
       })
       .catch((error) => {
-        if(error.response.status == 404){
+        if (error.response.status == 404) {
           setChats([]);
         }
       })
@@ -140,11 +148,19 @@ const Dashboard = () => {
   const loginFunc = async (e) => {
     e.preventDefault();
     try {
-      const responseUser = await axios.post(`https://socket.amisbudi.cloud/auth/admin/login`, {
+      const responseUser = await axios.post(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/auth/admin/login`, {
         username: username,
         password: password
+      }, {
+        headers: {
+          'lp3i-api-key': 'bdaeaa3274ac0f2d'
+        }
       });
-      const responseRoom = await axios.get(`https://socket.amisbudi.cloud/rooms/${token}`)
+      const responseRoom = await axios.get(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/rooms/${token}`, {
+        headers: {
+          'lp3i-api-key': 'bdaeaa3274ac0f2d'
+        }
+      });
       const dataUser = responseUser.data;
       const dataRoom = responseRoom.data;
 
@@ -293,7 +309,7 @@ const Dashboard = () => {
               </div>
             </section>
             <footer className={`flex flex-col md:flex-row items-center justify-between gap-5 md:gap-0 w-full mx-auto ${connection ? 'bg-emerald-500' : 'bg-red-500'} p-5`}>
-              <a href='https://kanglerian.github.io' target='_blank' className='order-2 md:order-1 block text-center text-xs text-slate-800 hover:text-slate-900'>Copyright © 2024 Lerian Febrianaa</a>
+              <a href='https://kanglerian.github.io' target='_blank' className='order-2 md:order-1 block text-center text-xs text-slate-800 hover:text-slate-900'>Copyright © 2024 Lerian Febriana</a>
               <div className='order-1 md:order-2 flex items-center gap-5'>
                 <div className='flex items-center gap-2 text-slate-800'>
                   <i className="fi fi-rr-user-headset text-xl flex"></i>
@@ -335,7 +351,7 @@ const Dashboard = () => {
                   <span>Sign In</span>
                 </button>
               </form>
-              <a href="https://politekniklp3i-tasikmalaya.ac.id" target="_blank" className='block text-xs text-sky-400'>Copyright © 2024 Lerian Febrianaa</a>
+              <a href="https://politekniklp3i-tasikmalaya.ac.id" target="_blank" className='block text-xs text-sky-400'>Copyright © 2024 Lerian Febriana</a>
             </div>
           </section>
         )

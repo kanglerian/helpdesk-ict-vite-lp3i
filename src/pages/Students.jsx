@@ -58,7 +58,11 @@ const Students = () => {
   }
 
   const getRooms = async () => {
-    await axios.get('https://socket.amisbudi.cloud/rooms')
+    await axios.get('https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/rooms', {
+      headers: {
+        'lp3i-api-key': 'bdaeaa3274ac0f2d'
+      }
+    })
       .then((response) => {
         setRooms(response.data);
       })
@@ -68,13 +72,17 @@ const Students = () => {
   }
 
   const getChats = async (roomActive, roomParams) => {
-    await axios.get(`https://socket.amisbudi.cloud/chats/student/${roomActive.token}/${roomParams}`)
+    await axios.get(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/student/${roomActive.token}/${roomParams}`, {
+      headers: {
+        'lp3i-api-key': 'bdaeaa3274ac0f2d'
+      }
+    })
       .then((response) => {
         const responseChat = response.data;
         setChats(responseChat);
       })
       .catch((error) => {
-        if(error.response.status == 404){
+        if (error.response.status == 404) {
           setChats([]);
         }
       })
@@ -193,11 +201,19 @@ const Students = () => {
   const loginFunc = async (e) => {
     e.preventDefault();
     try {
-      const responseUser = await axios.post(`https://socket.amisbudi.cloud/auth/login`, {
+      const responseUser = await axios.post(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/auth/login`, {
         username: username,
         password: password
+      }, {
+        headers: {
+          'lp3i-api-key': 'bdaeaa3274ac0f2d'
+        }
       });
-      const responseRoom = await axios.get(`https://socket.amisbudi.cloud/rooms/${token}`)
+      const responseRoom = await axios.get(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/rooms/${token}`, {
+        headers: {
+          'lp3i-api-key': 'bdaeaa3274ac0f2d'
+        }
+      });
       const dataUser = responseUser.data;
       const dataRoom = responseRoom.data;
 
@@ -418,7 +434,7 @@ const Students = () => {
               </div>
             </div>
             <footer className='w-full max-w-lg mx-auto bg-white py-2'>
-              <a href='https://kanglerian.github.io' target='_blank' className='block text-center text-[11px] font-medium text-gray-600'>Copyright © 2024 Lerian Febrianaa</a>
+              <a href='https://kanglerian.github.io' target='_blank' className='block text-center text-[11px] font-medium text-gray-600'>Copyright © 2024 Lerian Febriana</a>
             </footer>
           </section>
         ) : (
@@ -441,7 +457,7 @@ const Students = () => {
                   <span>Sign In</span>
                 </button>
               </form>
-              <a href='https://kanglerian.github.io' target='_blank' className='block text-xs text-sky-400'>Copyright © 2024 Lerian Febrianaa</a>
+              <a href='https://kanglerian.github.io' target='_blank' className='block text-xs text-sky-400'>Copyright © 2024 Lerian Febriana</a>
             </div>
           </section>
         )
