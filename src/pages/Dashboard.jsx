@@ -293,10 +293,10 @@ const Dashboard = () => {
                           </div>
                           <div className='flex items-center justify-between'>
                             <a target='_blank' href={`https://google.com/maps?q=${chat.latitude},${chat.longitude}`} className="text-slate-500 hover:text-slate-600 flex items-center gap-1">
-                              <span className="block text-xs"><i className="fi fi-rr-marker flex"></i></span>
-                              <span className="block text-xs">{moment(chat.date).tz('Asia/Jakarta').format('LLLL')}</span>
+                              <span className="block text-base"><i className="fi fi-rr-marker flex"></i></span>
+                              <span className="block text-base">{moment(chat.date).tz('Asia/Jakarta').format('LLLL')}</span>
                             </a>
-                            <p className='flex items-center gap-1 text-xs text-slate-500'>
+                            <p className='flex items-center gap-1 text-base text-slate-500'>
                               <i className="fi fi-rr-circle-user flex"></i>
                               <span>{chat.name_sender}</span>
                             </p>
