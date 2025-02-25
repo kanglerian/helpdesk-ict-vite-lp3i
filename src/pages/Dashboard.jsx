@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Lottie from "lottie-react";
 import axios from 'axios';
 import moment from 'moment-timezone';
@@ -9,6 +9,7 @@ import Man from '../assets/man.png'
 import Custom from '../assets/custom.png'
 import Secret from '../assets/secret.png'
 import BellSound from '../assets/bell.mp3'
+import Doodle from '../assets/doodle.png'
 import { socket } from '../socket'
 
 const Dashboard = () => {
@@ -91,7 +92,7 @@ const Dashboard = () => {
   }
 
   const manualRoom = () => {
-    const inputManual = prompt('TOKEN:')
+    const inputManual = prompt('TOKEN CUSTOM\nIsi token ruangan yang ingin diakses, contoh: 46155');
     if (inputManual) {
       let data = {
         name: 'Custom',
@@ -105,7 +106,7 @@ const Dashboard = () => {
   }
 
   const secretRoom = () => {
-    const inputManual = prompt('TOKEN SECRET:')
+    const inputManual = prompt('TOKEN SECRET\nIsi token ruangan yang ingin diakses, contoh: 46122')
     if (inputManual) {
       let data = {
         name: 'Secret',
@@ -130,13 +131,12 @@ const Dashboard = () => {
 
   const scrollToRef = () => {
     if (chatContainerRef.current) {
-      if (chatContainerRef.current) {
-        const currentScroll = chatContainerRef.current.scrollHeight;
+      setTimeout(() => {
         chatContainerRef.current.scrollTo({
-          top: currentScroll,
+          top: chatContainerRef.current.scrollHeight,
           behavior: 'smooth'
         });
-      }
+      }, 100);
     }
   };
 
@@ -235,16 +235,16 @@ const Dashboard = () => {
     <main className={`bg-slate-50 overflow-hidden`}>
       {
         logged ? (
-          <section className='flex flex-col justify-between h-screen'>
+          <section className='relative flex flex-col justify-between h-screen'>
             {
               rooms.length > 0 && enableRoom && (
-                <section className="w-full pb-8 pt-5 px-10 mx-auto bg-white flex justify-center flex-nowrap overflow-x-auto border-slate-200 text-slate-500 gap-5">
+                <section className="absolute w-1/2 md:w-1/4 top-45 md:top-33 right-5 md:right-5 drop-shadow-2xl rounded-2xl border-4 border-emerald-600 bg-gradient-to-r from-slate-200 via-white to-gray-200 flex justify-center flex-nowrap overflow-x-auto border-4 border-slate-500/20 text-slate-500 gap-5 z-50 rounded-2xl p-5 opacity-90">
                   {rooms.map((roomItem) => (
                     <button
                       key={roomItem.id}
                       type="button"
                       onClick={() => changeRoom(roomItem.name, roomItem.token, roomItem.type, roomItem.secret)}
-                      className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0"
+                      className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0 cursor-pointer transition-all ease-in-out"
                     >
                       <div className="w-full flex flex-col items-center justify-center gap-1">
                         <div
@@ -259,7 +259,7 @@ const Dashboard = () => {
                   <button
                     type="button"
                     onClick={manualRoom}
-                    className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0"
+                    className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0 cursor-pointer transition-all ease-in-out"
                   >
                     <div className="w-full flex flex-col items-center justify-center gap-1">
                       <div className="w-10 h-10 bg-cover bg-center" style={{ backgroundImage: `url(${Custom})` }}></div>
@@ -270,7 +270,7 @@ const Dashboard = () => {
                   <button
                     type="button"
                     onClick={secretRoom}
-                    className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0"
+                    className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0 cursor-pointer transition-all ease-in-out"
                   >
                     <div className="w-full flex flex-col items-center justify-center gap-1">
                       <div className="w-10 h-10 bg-cover bg-center" style={{ backgroundImage: `url(${Secret})` }}></div>
@@ -280,12 +280,43 @@ const Dashboard = () => {
                 </section>
               )
             }
-            <section ref={chatContainerRef} className={`w-full mx-auto bg-cover bg-slate-900 bg-blend-multiply h-screen overflow-y-auto p-5 md:p-10 pb-16 shadow-inner`} style={{ backgroundImage: `url(${BackgroundPattern})` }}>
-              <div className='flex flex-col gap-5'>
+            <section className={`relative w-full mx-auto bg-gradient-to-r from-slate-700 via-slate-800 to-slate-700`}>
+              <div className="absolute inset-0 bg-cover bg-center opacity-20 z-0 h-screen" style={{ backgroundImage: `url(${Doodle})` }}></div>
+              <div className={`absolute flex flex-col md:flex-row items-center justify-between gap-5 md:gap-0 w-1/2 md:w-1/3 top-5 right-5 drop-shadow-2xl rounded-2xl border-4 border-emerald-600 bg-gradient-to-r ${connection ? 'from-emerald-500 via-emerald-400 to-emerald-500' : 'from-red-500 via-red-400 to-red-500'} p-5 z-50 opacity-90`}>
+                <div className='flex flex-col items-center gap-2'>
+                  <div className='flex items-center gap-2 text-slate-800'>
+                    <i className="fi fi-rr-user-headset text-xl flex"></i>
+                    <h1 className='font-bold text-xl'>Dashboard {activeRoom.name}</h1>
+                  </div>
+                  <Link to={`/license`} target='_blank' className='block text-center text-xs text-gray-800 hover:text-gray-900 transition-all ease-in-out'>© {new Date().getFullYear()} <span className='font-medium'>Lerian Febriana</span>. All Rights Reserved.</Link>
+                </div>
+                <div className='order-1 md:order-2 flex items-center gap-5'>
+                  <button onClick={bellPlay} type='button' className='text-slate-800 hover:text-slate-900 cursor-pointer transition-all ease-in-out'>
+                    <i className="fi fi-rr-bell-ring flex"></i>
+                  </button>
+                  <button onClick={removeToken} type='button' className='text-slate-800 hover:text-slate-900 cursor-pointer transition-all ease-in-out'>
+                    <i className="fi fi-rr-key flex"></i>
+                  </button>
+                  {
+                    rooms.length > 0 &&
+                    <button onClick={() => setEnableRoom(!enableRoom)} type='button' className='text-slate-800 hover:text-slate-900 cursor-pointer transition-all ease-in-out'>
+                      {
+                        enableRoom ? (
+                          <i className="fi fi-rr-angle-square-up flex"></i>
+                        ) : (
+                          <i className="fi fi-rr-angle-square-down flex"></i>
+                        )
+                      }
+                    </button>
+                  }
+                </div>
+              </div>
+
+              <div ref={chatContainerRef} className='relative flex flex-col gap-5 z-10 overflow-y-auto h-screen p-8'>
                 {chats.length > 0 && chats.map((chat, index) => (
                   <div key={index}>
                     <div className="w-full flex justify-start items-center gap-3">
-                      <div className="w-full bg-slate-700 rounded-bl-none shadow-sm p-5 rounded-2xl">
+                      <div className="w-full bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 rounded-2xl shadow-sm p-8 drop-shadow-xl border-8 border-slate-800">
                         <div className="space-y-5 md:space-y-10">
                           <div className="space-y-1 md:space-y-3">
                             <h3 className="font-bold text-sm md:text-xl text-slate-300">Ruangan {chat.client}</h3>
@@ -308,33 +339,12 @@ const Dashboard = () => {
                 ))}
               </div>
             </section>
-            <footer className={`flex flex-col md:flex-row items-center justify-between gap-5 md:gap-0 w-full mx-auto ${connection ? 'bg-emerald-500' : 'bg-red-500'} p-5`}>
-              <a href='https://kanglerian.github.io' target='_blank' className='order-2 md:order-1 block text-center text-xs text-slate-800 hover:text-slate-900'>Copyright © 2024 Lerian Febriana</a>
-              <div className='order-1 md:order-2 flex items-center gap-5'>
-                <div className='flex items-center gap-2 text-slate-800'>
-                  <i className="fi fi-rr-user-headset text-xl flex"></i>
-                  <h1 className='font-bold text-xl'>Dashboard Help Chat {activeRoom.name}</h1>
-                </div>
-                |
-                <button onClick={bellPlay} type='button' className='text-slate-800 hover:text-slate-900'>
-                  <i className="fi fi-rr-bell-ring flex"></i>
-                </button>
-                <button onClick={removeToken} type='button' className='text-slate-800 hover:text-slate-900'>
-                  <i className="fi fi-rr-key flex"></i>
-                </button>
-                {
-                  rooms.length > 0 &&
-                  <button onClick={() => setEnableRoom(!enableRoom)} type='button' className='text-slate-800 hover:text-slate-900'>
-                    <i className="fi fi-rr-dropdown-select flex"></i>
-                  </button>
-                }
-              </div>
-            </footer>
           </section>
         ) : (
-          <section className='bg-sky-800 flex flex-col items-center justify-center h-screen'>
+          <section className='relative bg-sky-800 flex flex-col items-center justify-center h-screen'>
+            <div className="absolute inset-0 bg-cover bg-center opacity-10 z-0" style={{ backgroundImage: `url(${Doodle})` }}></div>
             <Lottie animationData={chatAnimation} loop={true} className='w-1/3 md:w-1/6' />
-            <div className='text-center space-y-5'>
+            <div className='text-center space-y-5 z-10'>
               <div className='space-y-1'>
                 <h2 className='font-bold text-2xl text-white'>Dashboard Helpdesk Chat</h2>
                 <p className='text-sm text-sky-200'>Make simple chat for quick problem solving.</p>
@@ -347,11 +357,11 @@ const Dashboard = () => {
                 <input type="text" id='username' value={username} onChange={(e) => setUsername(e.target.value)} placeholder='Username' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
                 <input type="password" id='password' value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Password' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
                 <input type="number" id='token' onChange={(e) => setToken(e.target.value)} placeholder='Token' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
-                <button type="submit" className="w-full flex gap-2 items-center justify-center py-2.5 px-3 text-sm font-medium text-white bg-sky-600 rounded-xl hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                <button type="submit" className="w-full flex gap-2 items-center justify-center py-2.5 px-3 text-sm font-medium text-white bg-sky-600 rounded-xl hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-all ease-in-out">
                   <span>Sign In</span>
                 </button>
               </form>
-              <a href="https://politekniklp3i-tasikmalaya.ac.id" target="_blank" className='block text-xs text-sky-400'>Copyright © 2024 Lerian Febriana</a>
+              <Link to={`/license`} target='_blank' className='block text-xs text-sky-400'>© {new Date().getFullYear()} Lerian Febriana. All Rights Reserved.</Link>
             </div>
           </section>
         )

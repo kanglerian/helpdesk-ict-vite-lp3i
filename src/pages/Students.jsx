@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import Lottie from "lottie-react";
 import moment from 'moment-timezone';
 import axios from 'axios';
@@ -9,6 +9,7 @@ import Man from '../assets/man.png'
 import Custom from '../assets/custom.png'
 import Secret from '../assets/secret.png'
 import BellSound from '../assets/bell.mp3'
+import Doodle from '../assets/doodle.png'
 import { socket } from '../socket'
 
 const Students = () => {
@@ -183,13 +184,12 @@ const Students = () => {
 
   const scrollToRef = () => {
     if (chatContainerRef.current) {
-      if (chatContainerRef.current) {
-        const currentScroll = chatContainerRef.current.scrollHeight;
+      setTimeout(() => {
         chatContainerRef.current.scrollTo({
-          top: currentScroll,
+          top: chatContainerRef.current.scrollHeight,
           behavior: 'smooth'
         });
-      }
+      }, 100);
     }
   };
 
@@ -308,16 +308,20 @@ const Students = () => {
   }, []);
 
   return (
-    <main className={`bg-slate-50 overflow-hidden`}>
+    <main className={`bg-[#EDEDED] overflow-hidden`}>
       {
         logged ? (
-          <section className='flex flex-col justify-between h-screen'>
-            <nav className='flex items-center justify-between w-full max-w-lg bg-white mx-auto p-5'>
-              <div className='flex items-end gap-2'>
-                <i className="fi fi-rr-user-headset text-xl"></i>
-                <h1 className='font-bold text-xl'>Help Chat {activeRoom.name}: {client}</h1>
+          <section className='relative flex flex-col justify-between h-screen'>
+
+            <div className="absolute inset-0 bg-cover bg-center opacity-3 z-0 h-screen" style={{ backgroundImage: `url(${Doodle})` }}></div>
+
+
+            <div className='absolute w-11/12 flex justify-between gap-5 mx-auto z-10 top-3 left-0 right-0'>
+              <div className={`${connection ? 'bg-emerald-500 border-emerald-700/30' : 'bg-red-500 border-red-700/30'} text-white drop-shadow  rounded-2xl border-b-4 px-5 py-3 flex items-center gap-2`}>
+                <i className={`fi fi-rr-user-headset text-lg flex ${connection ? 'bg-emerald-600' : 'bg-red-600'} p-2 rounded-lg`}></i>
+                <h1 className='font-bold text-sm'>{activeRoom.name}: {client}</h1>
               </div>
-              <div className='flex items-center gap-5'>
+              <div className='bg-white border-b-4 border-gray-300 drop-shadow rounded-2xl px-5 py-3 flex items-center gap-3'>
                 <button onClick={removeToken} type='button' className='text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-key"></i>
                 </button>
@@ -331,77 +335,35 @@ const Students = () => {
                   </button>
                 }
               </div>
-            </nav>
-            {
-              rooms.length > 0 && enableRoom && (
-                <section className="w-full h-1/5 max-w-lg mx-auto bg-white flex flex-nowrap overflow-x-auto border-gray-200 text-gray-500 px-5 gap-5">
-                  {rooms.map((roomItem) => (
-                    <button
-                      key={roomItem.id}
-                      type="button"
-                      onClick={() => changeRoom(roomItem.name, roomItem.token, roomItem.type, roomItem.secret)}
-                      className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0"
-                    >
-                      <div className="w-full flex flex-col items-center justify-center gap-1">
-                        <div
-                          className="w-10 h-10 bg-cover bg-center"
-                          style={{ backgroundImage: `url(${Man})` }}
-                        ></div>
-                        <h4 className="text-xs text-gray-800 font-medium">{roomItem.name}</h4>
-                      </div>
-                    </button>
-                  ))}
+            </div>
 
-                  <button
-                    type="button"
-                    onClick={manualRoom}
-                    className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0"
-                  >
-                    <div className="w-full flex flex-col items-center justify-center gap-1">
-                      <div className="w-10 h-10 bg-cover bg-center" style={{ backgroundImage: `url(${Custom})` }}></div>
-                      <h4 className="text-xs text-gray-800 font-medium">Manual</h4>
-                    </div>
-                  </button>
-
-                  <button
-                    type="button"
-                    onClick={secretRoom}
-                    className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0"
-                  >
-                    <div className="w-full flex flex-col items-center justify-center gap-1">
-                      <div className="w-10 h-10 bg-cover bg-center" style={{ backgroundImage: `url(${Secret})` }}></div>
-                      <h4 className="text-xs text-gray-800 font-medium">Secret</h4>
-                    </div>
-                  </button>
-                </section>
-              )
-            }
-            <section ref={chatContainerRef} className={`w-full max-w-lg mx-auto bg-cover bg-slate-300 bg-blend-multiply h-screen overflow-y-auto p-5 shadow-inner`} style={{ backgroundImage: `url(${BackgroundPattern})` }}>
-              <div className='flex flex-col gap-3'>
+            <div ref={chatContainerRef} className='relative flex flex-col gap-3 overflow-y-auto h-screen p-5 pt-24 pb-52'>
+              <div className="flex flex-col gap-3">
                 {chats.length > 0 && chats.map((chat, index) => (
                   <div key={index}>
-                    {chat.client === client ? (
-                      <div className="w-full flex justify-end">
-                        <div className="w-5/6 bg-sky-500 rounded-br-none shadow-sm p-5 rounded-2xl">
-                          <div className="space-y-5">
-                            <p className="text-sm text-white">{chat.message}</p>
-                            <p className="text-sky-200 flex items-center gap-1">
-                              <span className="block text-xs">{moment(chat.date).tz('Asia/Jakarta').format('LLLL')}</span>
-                            </p>
+                    {chat.client.toLowerCase() === client.toLowerCase() ? (
+                      <div className="flex justify-end">
+                        <div className="relative w-10/12">
+                          <div className='space-y-2'>
+                            <div className='relative shadow bg-blue-500 p-4 pb-10 rounded-2xl'>
+                              <p className='text-white text-sm'>{chat.message}</p>
+                              <small className='absolute right-4 bottom-3 text-[11px] text-blue-400'>
+                                {moment(chat.date).tz('Asia/Jakarta').format('llll')}
+                              </small>
+                            </div>
                           </div>
                         </div>
                       </div>
                     ) : (
-                      <div className="w-full flex justify-start">
-                        <div className="w-5/6 bg-white rounded-bl-none shadow-sm p-5 rounded-2xl">
-                          <div className="space-y-5">
-                            <div className="space-y-1">
-                              <h3 className="font-bold text-base text-gray-900">{chat.client}</h3>
-                              <p className="text-sm text-gray-700">{chat.message}</p>
+                      <div className="flex justify-start">
+                        <div className="relative w-10/12">
+                          <div className='space-y-2'>
+                            <div className='relative bg-white shadow p-4 pb-10 rounded-2xl'>
+                              <p className='text-gray-900 text-sm'>{chat.message}</p>
+                              <small className='absolute right-4 bottom-3 text-[11px] text-gray-400'>
+                                {moment(chat.date).tz('Asia/Jakarta').format('llll')}
+                              </small>
                             </div>
-                            <p className="text-gray-500 flex items-center gap-1">
-                              <span className="block text-xs">{moment(chat.date).tz('Asia/Jakarta').format('LLLL')}</span>
-                            </p>
                           </div>
                         </div>
                       </div>
@@ -409,38 +371,37 @@ const Students = () => {
                   </div>
                 ))}
               </div>
-            </section>
-            <div className='w-full max-w-lg bg-white mx-auto px-8 pt-8 pb-5'>
-              <div className='space-y-3'>
-                <form onSubmit={sendMessage} className="flex items-center gap-2 max-w-lg mx-auto">
-                  <div className="relative w-full">
-                    <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                      <i className={`fi fi-rr-${canSendMessage ? 'comment' : 'stopwatch'} text-gray-500`}></i>
-                    </div>
-                    <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} className={`${canSendMessage ? 'bg-gray-50' : 'bg-gray-200'} border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5`} placeholder={`${canSendMessage ? 'Tulis pesan disini...' : 'Tolong ditunggu selama 7 detik...'}`} required disabled={!canSendMessage} autoFocus={true} />
+            </div>
+
+            <div className='bg-white border-b-4 border-sky-900/30 absolute p-5 drop-shadow-xl w-11/12 mx-auto bottom-3 rounded-3xl space-y-3 left-0 right-0'>
+              <form onSubmit={sendMessage} className="flex gap-2 max-w-lg mx-auto">
+                <div className="relative w-full">
+                  <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                    <i className={`fi fi-rr-${canSendMessage ? 'comment' : 'stopwatch'} text-gray-500`}></i>
                   </div>
-                  {
-                    canSendMessage &&
-                    <button type="submit" className="flex gap-2 items-center justify-center py-2.5 px-3 text-sm font-medium text-white bg-sky-600 rounded-xl hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-blue-300">
-                      <i className="flex fi fi-rr-paper-plane"></i>
-                      <span>Kirim</span>
-                    </button>
-                  }
-                </form>
-                <div className='text-center space-y-1'>
-                  <h5 className='font-bold text-xs text-gray-600'>Catatan:</h5>
-                  <p className='text-xs text-gray-500 text-center'>Harap berikan deskripsi masalah yang jelas kepada tim ICT kami, sehingga kami dapat memberikan solusi yang tepat.</p>
+                  <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} className={`${canSendMessage ? 'bg-gray-100' : 'bg-gray-200'} border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5`} placeholder={`${canSendMessage ? 'Tulis pesan disini...' : 'Tolong ditunggu selama 7 detik...'}`} required disabled={!canSendMessage} autoFocus={true} />
                 </div>
+                {
+                  canSendMessage &&
+                  <button type="submit" className="flex gap-2 items-center justify-center py-2.5 px-4 text-sm font-medium text-white bg-sky-600 rounded-xl hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                    <i className="flex fi fi-rr-paper-plane"></i>
+                  </button>
+                }
+              </form>
+              <div className='text-center max-w-sm space-y-2'>
+                <div className='space-y-1'>
+                <h5 className='font-bold text-xs text-gray-600'>Catatan:</h5>
+                <p className='text-[11px] text-gray-500 text-center'>Harap berikan deskripsi masalah yang jelas kepada tim ICT kami, sehingga kami dapat memberikan solusi yang tepat.</p>
+                </div>
+                <Link to={`/license`} target='_blank' className='block text-[11px] text-gray-700'>© {new Date().getFullYear()} Lerian Febriana. All Rights Reserved.</Link>
               </div>
             </div>
-            <footer className='w-full max-w-lg mx-auto bg-white py-2'>
-              <a href='https://kanglerian.github.io' target='_blank' className='block text-center text-[11px] font-medium text-gray-600'>Copyright © 2024 Lerian Febriana</a>
-            </footer>
           </section>
         ) : (
-          <section className='bg-sky-800 flex flex-col items-center justify-center h-screen'>
+          <section className='relative bg-sky-800 flex flex-col items-center justify-center h-screen'>
+            <div className="absolute inset-0 bg-cover bg-center opacity-10 z-0" style={{ backgroundImage: `url(${Doodle})` }}></div>
             <Lottie animationData={chatAnimation} loop={true} className='w-1/3 md:w-1/6' />
-            <div className='text-center space-y-5'>
+            <div className='text-center space-y-5 z-10'>
               <div className='space-y-1'>
                 <h2 className='font-bold text-2xl text-white'>Helpdesk Chat {searchParams.get("room")}</h2>
                 <p className='text-sm text-sky-200'>Make simple chat for quick problem solving.</p>
@@ -453,11 +414,11 @@ const Students = () => {
                 <input type="text" id='username' value={username} onChange={(e) => setUsername(e.target.value)} placeholder='Username' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
                 <input type="password" id='password' value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Password' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
                 <input type="number" id='token' value={token} onChange={(e) => setToken(e.target.value)} placeholder='Token' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
-                <button type="submit" className="w-full flex gap-2 items-center justify-center py-2.5 px-3 text-sm font-medium text-white bg-sky-600 rounded-xl hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                <button type="submit" className="w-full flex gap-2 items-center justify-center py-2.5 px-3 text-sm font-medium text-white bg-sky-600 rounded-xl hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-all ease-in-out">
                   <span>Sign In</span>
                 </button>
               </form>
-              <a href='https://kanglerian.github.io' target='_blank' className='block text-xs text-sky-400'>Copyright © 2024 Lerian Febriana</a>
+              <Link to={`/license`} target='_blank' className='block text-xs text-sky-400'>© {new Date().getFullYear()} Lerian Febriana. All Rights Reserved.</Link>
             </div>
           </section>
         )

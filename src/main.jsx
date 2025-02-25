@@ -9,6 +9,7 @@ import './index.css'
 import Students from './pages/Students';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
+import License from './pages/License';
 
 const router = createBrowserRouter([
   {
@@ -22,6 +23,10 @@ const router = createBrowserRouter([
   {
     path: "/dashboard",
     element: <Dashboard/>,
+  },
+  {
+    path: "/license",
+    element: <License/>,
   },
 ]);
 
