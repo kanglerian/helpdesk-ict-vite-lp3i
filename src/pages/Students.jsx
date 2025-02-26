@@ -336,13 +336,17 @@ const Students = () => {
         delay: 0.8,
         ease: "elastic.out(1,0.3)"
       });
-      gsap.from('#container-message', {
-        duration: 3,
-        y: -2000,
-        rotation: -180,
-        delay: 1.1,
-        ease: "elastic.out(1,0.3)"
-      });
+      gsap.timeline()
+  .from('#container-message', {
+    duration: 3,
+    y: -2000,
+    rotation: -180,
+    delay: 1.1,
+    ease: "elastic.out(1,0.3)"
+  })
+  .to('#container-message', {
+    rotation: 5
+  });
     }
 
     if (!logged && containerAuth.current) {
@@ -412,7 +416,7 @@ const Students = () => {
     <main className={`relative bg-[#EDEDED]`}>
       {
         logged ? (
-          <section ref={containerSend} className='flex flex-col overflow-y-auto h-screen pt-26 py-54'>
+          <section ref={containerSend} id="ribsa" className='flex flex-col overflow-y-auto h-screen pt-26 py-54'>
 
             <div className="absolute inset-0 bg-cover bg-center opacity-3 z-0 h-screen" style={{ backgroundImage: `url(${Doodle})` }}></div>
 
@@ -515,6 +519,7 @@ const Students = () => {
             </div>
 
             <div id='container-message' className='fixed bg-white border-b-8 border-sky-800 p-5 drop-shadow-xl w-full max-w-lg mx-auto bottom-3 left-0 right-0 rounded-3xl space-y-3 flex flex-col items-center justify-center'>
+            <p className='text-sm font-medium text-gray-700'>Belok dikit gapapa 🤣</p>
               <form onSubmit={sendMessage} className="w-full flex gap-2 max-w-lg mx-auto">
                 <div className="relative w-full">
                   <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
