@@ -190,10 +190,10 @@ const Students = () => {
   }
 
   const scrollToRef = () => {
-    if (chatContainerRef.current) {
+    if (containerSend.current) {
       setTimeout(() => {
-        chatContainerRef.current.scrollTo({
-          top: chatContainerRef.current.scrollHeight,
+        containerSend.current.scrollTo({
+          top: containerSend.current.scrollHeight,
           behavior: 'smooth'
         });
       }, 100);
@@ -327,7 +327,7 @@ const Students = () => {
         duration: 1,
         y: -800,
         opacity: 0,
-        delay: 1.2,
+        delay: 3,
       });
       gsap.from('#container-setting', {
         duration: 3,

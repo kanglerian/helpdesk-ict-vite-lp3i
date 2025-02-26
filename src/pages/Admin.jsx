@@ -188,10 +188,10 @@ const Admin = () => {
   }
 
   const scrollToRef = () => {
-    if (chatContainerRef.current) {
-      if (chatContainerRef.current) {
-        const currentScroll = chatContainerRef.current.scrollHeight;
-        chatContainerRef.current.scrollTo({
+    if (containerSend.current) {
+      if (containerSend.current) {
+        const currentScroll = containerSend.current.scrollHeight;
+        containerSend.current.scrollTo({
           top: currentScroll,
           behavior: 'smooth'
         });
@@ -251,7 +251,7 @@ const Admin = () => {
 
     setTimeout(() => {
       scrollToRef();
-    }, 500);
+    }, 1000);
 
     function onConnect() {
       console.log('Connected!');
@@ -303,7 +303,7 @@ const Admin = () => {
         duration: 1,
         y: -800,
         opacity: 0,
-        delay: 1.2,
+        delay: 3,
       });
       gsap.from('#container-setting', {
         duration: 3,
@@ -459,7 +459,7 @@ const Admin = () => {
               </div>
             </div>
 
-            <div ref={chatContainerRef} id='container-chat' className="px-5 flex flex-col gap-3">
+            <div id='container-chat' className="px-5 flex flex-col gap-3">
               {chats.length > 0 && chats.map((chat, index) => (
                 <div key={index}>
                   {chat.client.toLowerCase() === client.toLowerCase() ? (
