@@ -416,10 +416,14 @@ const Students = () => {
 
             <div className="absolute inset-0 bg-cover bg-center opacity-3 z-0 h-screen" style={{ backgroundImage: `url(${Doodle})` }}></div>
 
-            <div className='fixed w-11/12 flex justify-between gap-5 mx-auto z-10 top-5 left-0 right-0'>
+            <div onClick={() => rooms.length > 0 && setEnableRoom(!enableRoom)} className='fixed w-11/12 flex justify-between gap-5 mx-auto z-10 top-5 left-0 right-0'>
               <div id='container-account' className={`${connection ? 'bg-emerald-500 border-emerald-700/30' : 'bg-red-500 border-red-700/30'} text-white drop-shadow  rounded-2xl border-b-4 px-5 py-3 flex items-center gap-2`}>
                 <i className={`fi fi-rr-user-headset text-lg flex ${connection ? 'bg-emerald-600' : 'bg-red-600'} p-2 rounded-lg`}></i>
                 <h1 className='font-bold text-sm'>{activeRoom.name}: {client}</h1>
+                {
+                  rooms.length > 0 &&
+                  <i className="fi fi-rr-dropdown-select flex"></i>
+                }
               </div>
               {
                 rooms.length > 0 && enableRoom && (
@@ -466,19 +470,13 @@ const Students = () => {
                 )
               }
 
-              <div id='container-setting' className='bg-white border-b-4 border-gray-300 drop-shadow rounded-2xl px-5 py-3 flex items-center gap-3'>
+              <div id='container-setting' className='bg-white border-b-4 border-gray-300 drop-shadow rounded-2xl px-5 py-3 flex items-center gap-4'>
                 <button onClick={removeToken} type='button' className='text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-key"></i>
                 </button>
                 <button type='button' onClick={scrollToRef} className={`${connection ? 'text-emerald-500' : 'text-red-500'}`}>
                   <i className="fi fi-rr-wifi"></i>
                 </button>
-                {
-                  rooms.length > 0 &&
-                  <button onClick={() => setEnableRoom(!enableRoom)} type='button' className='text-sky-700 hover:text-sky-800'>
-                    <i className="fi fi-rr-dropdown-select"></i>
-                  </button>
-                }
               </div>
             </div>
 
@@ -539,7 +537,7 @@ const Students = () => {
                 <Link to={`/license`} target='_blank' className='block text-[11px] text-gray-700'>© {new Date().getFullYear()} Lerian Febriana. All Rights Reserved.</Link>
               </div>
             </div>
-            
+
           </section>
         ) : (
           <section ref={containerAuth} className='relative bg-sky-800 flex flex-col items-center justify-center h-screen'>

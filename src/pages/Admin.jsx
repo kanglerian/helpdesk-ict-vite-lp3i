@@ -120,7 +120,7 @@ const Admin = () => {
   }
 
   const manualRoom = () => {
-    const inputManual = prompt('TOKEN:')
+    const inputManual = prompt('TOKEN CUSTOM\nIsi token ruangan yang ingin diakses, contoh: 46155')
     if (inputManual) {
       let data = {
         name: 'Custom',
@@ -134,7 +134,7 @@ const Admin = () => {
   }
 
   const secretRoom = () => {
-    const inputManual = prompt('TOKEN SECRET:')
+    const inputManual = prompt('TOKEN SECRET\nIsi token ruangan yang ingin diakses, contoh: 46122')
     if (inputManual) {
       let data = {
         name: 'Secret',
@@ -314,7 +314,7 @@ const Admin = () => {
       });
       gsap.from('#container-message', {
         duration: 3,
-        y: -800,
+        y: -2000,
         rotation: -180,
         delay: 1.1,
         ease: "elastic.out(1,0.3)"
@@ -385,16 +385,21 @@ const Admin = () => {
   }, [logged]);
 
   return (
-    <main className={`bg-[#EDEDED] overflow-hidden`}>
+    <main className={`relative bg-[#EDEDED]`}>
       {
         logged ? (
-          <section ref={containerSend} className='relative flex flex-col justify-between h-screen'>
+          <section ref={containerSend} className='flex flex-col overflow-y-auto h-screen pt-26 py-54'>
+
             <div className="absolute inset-0 bg-cover bg-center opacity-3 z-0 h-screen" style={{ backgroundImage: `url(${Doodle})` }}></div>
 
-            <div className='absolute w-11/12 flex justify-between gap-5 mx-auto z-10 top-10 left-0 right-0'>
+            <div onClick={() => rooms.length > 0 && setEnableRoom(!enableRoom)} className='fixed w-11/12 flex justify-between gap-5 mx-auto z-10 top-5 left-0 right-0'>
               <div id='container-account' className={`${connection ? 'bg-emerald-500 border-emerald-700/30' : 'bg-red-500 border-red-700/30'} text-white drop-shadow  rounded-2xl border-b-4 px-5 py-3 flex items-center gap-2`}>
                 <i className={`fi fi-rr-user-headset text-lg flex ${connection ? 'bg-emerald-600' : 'bg-red-600'} p-2 rounded-lg`}></i>
                 <h1 className='font-bold text-sm'>{activeRoom.name}: {client}</h1>
+                {
+                  rooms.length > 0 &&
+                  <i className="fi fi-rr-dropdown-select flex"></i>
+                }
               </div>
               {
                 rooms.length > 0 && enableRoom && (
@@ -441,64 +446,59 @@ const Admin = () => {
                 )
               }
 
-              <div id='container-setting' className='bg-white border-b-4 border-gray-300 drop-shadow rounded-2xl px-5 py-3 flex items-center gap-3'>
+              <div id='container-setting' className='bg-white border-b-4 border-gray-300 drop-shadow rounded-2xl px-5 py-3 flex items-center gap-4'>
                 <button onClick={removeToken} type='button' className='text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-key"></i>
                 </button>
                 <button type='button' onClick={scrollToRef} className={`${connection ? 'text-emerald-500' : 'text-red-500'}`}>
                   <i className="fi fi-rr-wifi"></i>
                 </button>
-                {
-                  rooms.length > 0 &&
-                  <button onClick={() => setEnableRoom(!enableRoom)} type='button' className='text-sky-700 hover:text-sky-800'>
-                    <i className="fi fi-rr-dropdown-select"></i>
-                  </button>
-                }
+                <button onClick={clearChats} type='button' className='text-red-700 hover:text-red-800'>
+                  <i className="fi fi-rr-trash"></i>
+                </button>
               </div>
             </div>
 
-            <div ref={chatContainerRef} id='container-chat' className='relative flex flex-col gap-3 overflow-y-auto h-screen p-5 pt-28 pb-64'>
-              <div className="flex flex-col gap-3">
-                {chats.length > 0 && chats.map((chat, index) => (
-                  <div key={index}>
-                    {chat.client.toLowerCase() === client.toLowerCase() ? (
-                      <div className="flex justify-end">
-                        <div className="relative w-10/12 md:w-7/12">
-                          <div className='space-y-2'>
-                            <div className='relative shadow bg-blue-500 p-4 pb-10 rounded-2xl'>
-                              <p className='text-white text-sm'>{chat.message}</p>
-                              <small className='absolute right-4 bottom-3 text-[11px] text-blue-400'>
-                                {moment(chat.date).tz('Asia/Jakarta').format('llll')}
-                              </small>
-                            </div>
+            <div ref={chatContainerRef} id='container-chat' className="px-5 flex flex-col gap-3">
+              {chats.length > 0 && chats.map((chat, index) => (
+                <div key={index}>
+                  {chat.client.toLowerCase() === client.toLowerCase() ? (
+                    <div className="flex justify-end">
+                      <div className="relative w-10/12 md:w-7/12">
+                        <div className='space-y-2'>
+                          <div className='relative shadow bg-blue-500 p-4 pb-10 rounded-2xl'>
+                            <p className='text-white text-sm'>{chat.message}</p>
+                            <small className='absolute right-4 bottom-3 text-[11px] text-blue-400'>
+                              {moment(chat.date).tz('Asia/Jakarta').format('llll')}
+                            </small>
                           </div>
                         </div>
                       </div>
-                    ) : (
-                      <div className="flex items-center justify-start gap-3">
-                        <div className="relative w-10/12">
-                          <div className='space-y-2'>
-                            <div className='relative bg-white shadow p-4 pb-10 rounded-2xl'>
-                              <p className='text-gray-900 text-sm'>{chat.message}</p>
-                              <small className='absolute right-4 bottom-3 text-[11px] text-gray-400'>
-                                {moment(chat.date).tz('Asia/Jakarta').format('llll')}
-                              </small>
-                            </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-start gap-3">
+                      <div className="relative w-10/12">
+                        <div className='space-y-2'>
+                          <div className='relative bg-white shadow p-4 pb-10 rounded-2xl'>
+                            <p className='text-gray-900 text-sm'>{chat.message}</p>
+                            <small className='absolute right-4 bottom-3 text-[11px] text-gray-400'>
+                              {moment(chat.date).tz('Asia/Jakarta').format('llll')}
+                            </small>
                           </div>
                         </div>
-                        <div className="w-1/6">
-                          <button type='button' onClick={() => setReplyMessage(chat.client)} className='text-gray-400 drop-shadow'>
-                            <i className="fi fi-rr-undo"></i>
-                          </button>
-                        </div>
                       </div>
-                    )}
-                  </div>
-                ))}
-              </div>
+                      <div className="w-1/6">
+                        <button type='button' onClick={() => setReplyMessage(chat.client)} className='text-gray-400 drop-shadow'>
+                          <i className="fi fi-rr-undo"></i>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
             </div>
 
-            <div id='container-message' className='bg-white border-b-8 border-sky-800 absolute p-5 drop-shadow-xl w-11/12 md:w-1/3 mx-auto bottom-10 rounded-3xl space-y-3 left-0 right-0 flex flex-col items-center justify-center'>
+            <div id='container-message' className='fixed bg-white border-b-8 border-sky-800 p-5 drop-shadow-xl w-11/12 md:w-1/3 mx-auto bottom-3 left-0 right-0 rounded-3xl space-y-3 flex flex-col items-center justify-center'>
               <form onSubmit={sendMessage} className="w-full flex gap-2 max-w-lg mx-auto">
                 <div className="relative w-1/3">
                   <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -527,6 +527,7 @@ const Admin = () => {
                 <Link to={`/license`} target='_blank' className='block text-[11px] text-gray-700'>© {new Date().getFullYear()} Lerian Febriana. All Rights Reserved.</Link>
               </div>
             </div>
+
           </section>
         ) : (
           <section ref={containerAuth} className='relative bg-sky-800 flex flex-col items-center justify-center h-screen'>

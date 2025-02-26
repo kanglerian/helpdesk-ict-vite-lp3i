@@ -1,11 +1,12 @@
 import { useEffect, useState, useRef } from 'react'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import Lottie from "lottie-react";
-import moment from 'moment-timezone';
 import axios from 'axios';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import moment from 'moment-timezone';
 import chatAnimation from "../assets/chat-animation.json";
+import BackgroundPattern from '../assets/flatten.png'
 import Man from '../assets/man.png'
 import Custom from '../assets/custom.png'
 import Secret from '../assets/secret.png'
@@ -15,49 +16,42 @@ import { socket } from '../socket'
 
 gsap.registerPlugin(useGSAP);
 
-const Students = () => {
+const Admin = () => {
   const navigate = useNavigate();
-
   const chatContainerRef = useRef(null);
+
   const containerSend = useRef(null);
   const containerAuth = useRef(null);
 
   const [rooms, setRooms] = useState([]);
   const [chats, setChats] = useState([]);
   const [connection, setConnection] = useState(false);
-  const [searchParams] = useSearchParams();
 
-  const [client, setClient] = useState('');
+  const client = 'Administrator';
   const [activeRoom, setActiveRoom] = useState(null);
+
   const [enableRoom, setEnableRoom] = useState(false);
   const [logged, setLogged] = useState(false);
-  const [username, setUsername] = useState('student');
-  const [password, setPassword] = useState('helpdeskstudent');
-  const [token, setToken] = useState('46150');
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+  const [token, setToken] = useState('');
+  const [replyMessage, setReplyMessage] = useState('');
   const [message, setMessage] = useState('');
   const [canSendMessage, setCanSendMessage] = useState(true);
-  const [latitude, setLatitude] = useState(null);
-  const [longitude, setLongitude] = useState(null);
 
   const Authentication = () => {
-    const queryRoomParams = searchParams.get("room");
-    const queryTokenParams = searchParams.get("token");
-    const roomParams = queryRoomParams || 'anonymous';
-    const tokenParams = queryTokenParams || '46150';
-    const room = localStorage.getItem('HELPDESK:room');
-    const account = localStorage.getItem('HELPDESK:account');
-    setClient(roomParams)
-    setToken(tokenParams)
+    const room = localStorage.getItem('HELPDESK:room_admin');
+    const account = localStorage.getItem('HELPDESK:account_admin');
     if (account) {
       if (!room) {
-        localStorage.removeItem('HELPDESK:room');
-        localStorage.removeItem('HELPDESK:account');
+        localStorage.removeItem('HELPDESK:room_admin');
+        localStorage.removeItem('HELPDESK:account_admin');
         setLogged(false);
-        navigate('/')
+        navigate('/admin')
       } else {
-        const roomStorage = localStorage.getItem('HELPDESK:room');
+        const roomStorage = localStorage.getItem('HELPDESK:room_admin');
         const roomActive = JSON.parse(roomStorage);
-        getChats(roomActive, roomParams);
+        getChats(roomActive);
         setActiveRoom(roomActive);
         getRooms();
         setLogged(true)
@@ -79,8 +73,26 @@ const Students = () => {
       })
   }
 
-  const getChats = async (roomActive, roomParams) => {
-    await axios.get(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/student/${roomActive.token}/${roomParams}`, {
+  const clearChats = async () => {
+    const confirmed = confirm(`Apakah anda yakin akan menghapus pesan ${activeRoom.name}?`);
+    if (confirmed) {
+      await axios.delete(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/${activeRoom.token}`, {
+        headers: {
+          'lp3i-api-key': 'bdaeaa3274ac0f2d'
+        }
+      })
+        .then((response) => {
+          alert(response.data.message);
+          getChats(activeRoom);
+        })
+        .catch((error) => {
+          console.log(error);
+        })
+    }
+  }
+
+  const getChats = async (roomActive) => {
+    await axios.get(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/admin/${roomActive.token}`, {
       headers: {
         'lp3i-api-key': 'bdaeaa3274ac0f2d'
       }
@@ -96,20 +108,6 @@ const Students = () => {
       })
   }
 
-  const getLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setLatitude(position.coords.latitude);
-          setLongitude(position.coords.longitude);
-        },
-        (error) => {
-          console.log(error.message);
-        }
-      );
-    }
-  }
-
   const changeRoom = (name, token, type, secret) => {
     let data = {
       name: name,
@@ -117,12 +115,12 @@ const Students = () => {
       type: type,
       secret: secret,
     }
-    localStorage.setItem('HELPDESK:room', JSON.stringify(data));
+    localStorage.setItem('HELPDESK:room_admin', JSON.stringify(data));
     Authentication();
   }
 
   const manualRoom = () => {
-    const inputManual = prompt('TOKEN CUSTOM\nIsi token ruangan yang ingin diakses, contoh: 46155')
+    const inputManual = prompt('TOKEN:')
     if (inputManual) {
       let data = {
         name: 'Custom',
@@ -130,13 +128,13 @@ const Students = () => {
         type: true,
         secret: false,
       }
-      localStorage.setItem('HELPDESK:room', JSON.stringify(data));
+      localStorage.setItem('HELPDESK:room_admin', JSON.stringify(data));
       Authentication();
     }
   }
 
   const secretRoom = () => {
-    const inputManual = prompt('TOKEN SECRET\nIsi token ruangan yang ingin diakses, contoh: 46122')
+    const inputManual = prompt('TOKEN SECRET:')
     if (inputManual) {
       let data = {
         name: 'Secret',
@@ -144,7 +142,7 @@ const Students = () => {
         type: true,
         secret: true,
       }
-      localStorage.setItem('HELPDESK:room', JSON.stringify(data));
+      localStorage.setItem('HELPDESK:room_admin', JSON.stringify(data));
       Authentication();
     }
   }
@@ -152,22 +150,22 @@ const Students = () => {
   const removeToken = () => {
     const logoutPrompt = confirm('Apakah anda yakin akan keluar?');
     if (logoutPrompt) {
-      localStorage.removeItem('HELPDESK:room');
-      localStorage.removeItem('HELPDESK:account');
+      localStorage.removeItem('HELPDESK:room_admin');
+      localStorage.removeItem('HELPDESK:account_admin');
       setLogged(false);
-      navigate('/')
+      navigate('/admin')
     }
   }
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    const accountStringify = localStorage.getItem('HELPDESK:account');
-    const roomStringify = localStorage.getItem('HELPDESK:room');
+    const accountStringify = localStorage.getItem('HELPDESK:account_admin');
+    const roomStringify = localStorage.getItem('HELPDESK:room_admin');
     if (accountStringify && roomStringify) {
       const accountParse = JSON.parse(accountStringify);
       const roomParse = JSON.parse(roomStringify);
       const dataChat = {
-        client: client,
+        client: accountParse.name,
         name_room: roomParse.name,
         token: roomParse.token,
         not_save: roomParse.secret,
@@ -175,28 +173,29 @@ const Students = () => {
         name_sender: accountParse.name,
         role_sender: accountParse.role,
         message: message,
-        reply: null,
+        reply: replyMessage,
         date: new Date(),
-        latitude: latitude,
-        longitude: longitude
+        latitude: null,
+        longitude: null
       }
       setCanSendMessage(false);
       socket.emit('message', dataChat)
       setMessage('');
       setTimeout(() => {
         setCanSendMessage(true);
-      }, 7000);
+      }, 2000);
     }
   }
 
   const scrollToRef = () => {
     if (chatContainerRef.current) {
-      setTimeout(() => {
+      if (chatContainerRef.current) {
+        const currentScroll = chatContainerRef.current.scrollHeight;
         chatContainerRef.current.scrollTo({
-          top: chatContainerRef.current.scrollHeight,
+          top: currentScroll,
           behavior: 'smooth'
         });
-      }, 100);
+      }
     }
   };
 
@@ -208,7 +207,7 @@ const Students = () => {
   const loginFunc = async (e) => {
     e.preventDefault();
     try {
-      const responseUser = await axios.post(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/auth/login`, {
+      const responseUser = await axios.post(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/auth/admin/login`, {
         username: username,
         password: password
       }, {
@@ -220,7 +219,7 @@ const Students = () => {
         headers: {
           'lp3i-api-key': 'bdaeaa3274ac0f2d'
         }
-      });
+      })
       const dataUser = responseUser.data;
       const dataRoom = responseRoom.data;
 
@@ -237,19 +236,18 @@ const Students = () => {
         role: dataUser.role
       }
 
-      localStorage.setItem('HELPDESK:room', JSON.stringify(dataHelpdeskRoom));
-      localStorage.setItem('HELPDESK:account', JSON.stringify(dataHelpdeskAccount));
+      localStorage.setItem('HELPDESK:room_admin', JSON.stringify(dataHelpdeskRoom));
+      localStorage.setItem('HELPDESK:account_admin', JSON.stringify(dataHelpdeskAccount));
       setLogged(true);
       Authentication();
     } catch (err) {
       console.log(err);
-      alert(err.response.data.message)
+      alert(err.response.data.message);
     }
   }
 
   useEffect(() => {
     Authentication();
-    getLocation();
 
     setTimeout(() => {
       scrollToRef();
@@ -266,37 +264,15 @@ const Students = () => {
     }
 
     function onMessage(message) {
-      const queryRoomParams = searchParams.get("room");
-      const roomParams = queryRoomParams || 'anonymous';
-      const roomStringify = localStorage.getItem('HELPDESK:room');
+      const roomStringify = localStorage.getItem('HELPDESK:room_admin');
       if (roomStringify) {
         const roomParse = JSON.parse(roomStringify);
-        if (message.token == roomParse.token && (message.reply == roomParams || message.client == roomParams)) {
+        if (message.token == roomParse.token) {
           setChats(prevChat => [...prevChat, message]);
           setTimeout(() => {
             scrollToRef();
-            if (message.role_sender == 'A') {
+            if (message.role_sender == 'S') {
               bellPlay();
-            } else {
-              setTimeout(() => {
-                let autoreply = {
-                  client: 'Help BOT',
-                  date: message.date,
-                  id: 0,
-                  message: "Informasi sudah diterima, mohon ditunggu ya!",
-                  name_room: message.name_room,
-                  name_sender: 'Help BOT',
-                  reply: roomParams,
-                  role_sender: 'A',
-                  token: message.token,
-                  uuid_sender: '0194818245'
-                }
-                setChats(prevChat => [...prevChat, autoreply]);
-                setTimeout(() => {
-                  scrollToRef();
-                  bellPlay();
-                }, 100);
-              }, 3000);
             }
           }, 100);
         }
@@ -338,7 +314,7 @@ const Students = () => {
       });
       gsap.from('#container-message', {
         duration: 3,
-        y: -2000,
+        y: -800,
         rotation: -180,
         delay: 1.1,
         ease: "elastic.out(1,0.3)"
@@ -346,12 +322,12 @@ const Students = () => {
     }
 
     if (!logged && containerAuth.current) {
-      gsap.fromTo('#auth-title',{
+      gsap.fromTo('#auth-title', {
         opacity: 0,
         rotate: 50,
         y: -50,
         transformOrigin: 'left top'
-      },{
+      }, {
         opacity: 1,
         y: 0,
         duration: 2,
@@ -359,12 +335,12 @@ const Students = () => {
         delay: 0,
         ease: "elastic.out(1,0.3)",
       });
-      gsap.fromTo('#auth-description',{
+      gsap.fromTo('#auth-description', {
         opacity: 0,
         rotate: 50,
         y: -50,
         transformOrigin: 'right top'
-      },{
+      }, {
         opacity: 1,
         y: 0,
         duration: 2,
@@ -372,12 +348,12 @@ const Students = () => {
         delay: 0.2,
         ease: "elastic.out(1,0.3)"
       });
-      gsap.fromTo('#auth-status',{
+      gsap.fromTo('#auth-status', {
         opacity: 0,
         rotate: 60,
         y: -100,
         transformOrigin: 'center top'
-      },{
+      }, {
         opacity: 1,
         y: 0,
         duration: 2,
@@ -385,21 +361,21 @@ const Students = () => {
         delay: 0.4,
         ease: "elastic.out(1,0.3)"
       });
-      gsap.fromTo('#auth-form',{
+      gsap.fromTo('#auth-form', {
         opacity: 0,
         y: -200,
         transformOrigin: 'center top'
-      },{
+      }, {
         opacity: 1,
         y: 0,
         duration: 1,
         delay: 0.5,
       });
-      gsap.fromTo('#copyright',{
+      gsap.fromTo('#copyright', {
         opacity: 0,
         y: -200,
         transformOrigin: 'center top'
-      },{
+      }, {
         opacity: 1,
         y: 0,
         duration: 1,
@@ -409,13 +385,13 @@ const Students = () => {
   }, [logged]);
 
   return (
-    <main className={`relative bg-[#EDEDED]`}>
+    <main className={`bg-[#EDEDED] overflow-hidden`}>
       {
         logged ? (
-          <section ref={containerSend} className='bg-red-200 relative flex flex-col justify-between  h-full'>
+          <section ref={containerSend} className='relative flex flex-col justify-between h-screen'>
             <div className="absolute inset-0 bg-cover bg-center opacity-3 z-0 h-screen" style={{ backgroundImage: `url(${Doodle})` }}></div>
 
-            <div className='absolute w-11/12 flex justify-between gap-5 mx-auto z-10'>
+            <div className='absolute w-11/12 flex justify-between gap-5 mx-auto z-10 top-10 left-0 right-0'>
               <div id='container-account' className={`${connection ? 'bg-emerald-500 border-emerald-700/30' : 'bg-red-500 border-red-700/30'} text-white drop-shadow  rounded-2xl border-b-4 px-5 py-3 flex items-center gap-2`}>
                 <i className={`fi fi-rr-user-headset text-lg flex ${connection ? 'bg-emerald-600' : 'bg-red-600'} p-2 rounded-lg`}></i>
                 <h1 className='font-bold text-sm'>{activeRoom.name}: {client}</h1>
@@ -481,7 +457,7 @@ const Students = () => {
               </div>
             </div>
 
-            <div ref={chatContainerRef} id='container-chat' className='flex flex-col gap-3 overflow-y-auto h-screen p-5'>
+            <div ref={chatContainerRef} id='container-chat' className='relative flex flex-col gap-3 overflow-y-auto h-screen p-5 pt-28 pb-64'>
               <div className="flex flex-col gap-3">
                 {chats.length > 0 && chats.map((chat, index) => (
                   <div key={index}>
@@ -499,7 +475,7 @@ const Students = () => {
                         </div>
                       </div>
                     ) : (
-                      <div className="flex justify-start">
+                      <div className="flex items-center justify-start gap-3">
                         <div className="relative w-10/12">
                           <div className='space-y-2'>
                             <div className='relative bg-white shadow p-4 pb-10 rounded-2xl'>
@@ -510,6 +486,11 @@ const Students = () => {
                             </div>
                           </div>
                         </div>
+                        <div className="w-1/6">
+                          <button type='button' onClick={() => setReplyMessage(chat.client)} className='text-gray-400 drop-shadow'>
+                            <i className="fi fi-rr-undo"></i>
+                          </button>
+                        </div>
                       </div>
                     )}
                   </div>
@@ -517,13 +498,19 @@ const Students = () => {
               </div>
             </div>
 
-            <div id='container-message' className='bg-white border-b-8 border-sky-800 p-5 drop-shadow-xl w-11/12 md:w-1/3 mx-auto rounded-3xl space-y-3 flex flex-col items-center justify-center'>
+            <div id='container-message' className='bg-white border-b-8 border-sky-800 absolute p-5 drop-shadow-xl w-11/12 md:w-1/3 mx-auto bottom-10 rounded-3xl space-y-3 left-0 right-0 flex flex-col items-center justify-center'>
               <form onSubmit={sendMessage} className="w-full flex gap-2 max-w-lg mx-auto">
-                <div className="relative w-full">
+                <div className="relative w-1/3">
+                  <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                    <i className={`fi fi-rr-${canSendMessage ? 'smart-home' : 'stopwatch'} text-gray-500`}></i>
+                  </div>
+                  <input type="text" value={replyMessage} onChange={(e) => setReplyMessage(e.target.value)} className={`${canSendMessage ? 'bg-gray-50' : 'bg-gray-200'} border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5`} placeholder='Ruangan' required disabled={!canSendMessage} autoFocus={true} />
+                </div>
+                <div className="relative w-2/3">
                   <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                     <i className={`fi fi-rr-${canSendMessage ? 'comment' : 'stopwatch'} text-gray-500`}></i>
                   </div>
-                  <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} className={`${canSendMessage ? 'bg-gray-100' : 'bg-gray-200'} border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5`} placeholder={`${canSendMessage ? 'Tulis pesan disini...' : 'Tolong ditunggu selama 7 detik...'}`} required disabled={!canSendMessage} autoFocus={true} />
+                  <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} className={`${canSendMessage ? 'bg-gray-50' : 'bg-gray-200'} border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5`} placeholder={`${canSendMessage ? 'Tulis pesan disini...' : 'Tolong ditunggu selama 2 detik!'}`} required disabled={!canSendMessage} autoFocus={true} />
                 </div>
                 {
                   canSendMessage &&
@@ -547,7 +534,7 @@ const Students = () => {
             <Lottie animationData={chatAnimation} loop={true} className='w-1/3 md:w-1/6' />
             <div className='text-center space-y-5 z-10'>
               <div className='space-y-1'>
-                <h2 id="auth-title" className='font-bold text-2xl text-white'>Helpdesk Chat {searchParams.get("room")}</h2>
+                <h2 id="auth-title" className='font-bold text-2xl text-white'>Admin Helpdesk Chat</h2>
                 <p id="auth-description" className='text-sm text-sky-200'>Make simple chat for quick problem solving.</p>
               </div>
               <p id="auth-status" className={`${connection ? 'bg-emerald-500' : 'bg-red-500'} text-white text-xs py-2 rounded-xl`}>
@@ -571,4 +558,4 @@ const Students = () => {
   )
 }
 
-export default Students
+export default Admin
