@@ -450,6 +450,12 @@ const Admin = () => {
                 <button onClick={removeToken} type='button' className='text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-key"></i>
                 </button>
+                <button onClick={bellPlay} type='button' className='text-sky-700 hover:text-sky-800'>
+                  <i className="fi fi-rr-bell-ring"></i>
+                </button>
+                <a href={`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/download/${activeRoom.token}`} target='_blank' className='text-sky-700 hover:text-sky-800'>
+                  <i className="fi fi-rr-download"></i>
+                </a>
                 <button type='button' onClick={scrollToRef} className={`${connection ? 'text-emerald-500' : 'text-red-500'}`}>
                   <i className="fi fi-rr-wifi"></i>
                 </button>
