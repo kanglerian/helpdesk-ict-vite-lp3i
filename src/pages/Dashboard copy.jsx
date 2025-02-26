@@ -13,10 +13,7 @@ import { socket } from '../socket'
 
 const Dashboard = () => {
   const navigate = useNavigate();
-
-  const containerSend = useRef(null);
   const chatContainerRef = useRef(null);
-
   const [rooms, setRooms] = useState([]);
   const [chats, setChats] = useState([]);
   const [connection, setConnection] = useState(false);
@@ -132,10 +129,10 @@ const Dashboard = () => {
   }
 
   const scrollToRef = () => {
-    if (containerSend.current) {
+    if (chatContainerRef.current) {
       setTimeout(() => {
-        containerSend.current.scrollTo({
-          top: containerSend.current.scrollHeight,
+        chatContainerRef.current.scrollTo({
+          top: chatContainerRef.current.scrollHeight,
           behavior: 'smooth'
         });
       }, 100);
@@ -237,104 +234,110 @@ const Dashboard = () => {
     <main className={`relative bg-[#EDEDED]`}>
       {
         logged ? (
-          <section ref={containerSend} className='flex flex-col overflow-y-auto h-screen px-8 py-10'>
-            <div className="absolute inset-0 bg-cover bg-center opacity-3 z-0 h-screen" style={{ backgroundImage: `url(${Doodle})` }}></div>
-
-            <div className='fixed w-11/12 flex justify-between gap-5 mx-auto z-10 top-5 left-0 right-0'>
-              <div id='container-account' onClick={() => rooms.length > 0 && setEnableRoom(!enableRoom)} className={`${connection ? 'bg-emerald-500 border-emerald-700/30' : 'bg-red-500 border-red-700/30'} text-white drop-shadow  rounded-2xl border-b-4 px-5 py-3 flex items-center gap-2`}>
-                <i className={`fi fi-rr-user-headset text-lg flex ${connection ? 'bg-emerald-600' : 'bg-red-600'} p-2 rounded-lg`}></i>
-                <h1 className='font-bold text-lg'>Dashboard {activeRoom.name}</h1>
-                {
-                  rooms.length > 0 &&
-                  <i className="fi fi-rr-dropdown-select flex"></i>
-                }
-              </div>
-              {
-                rooms.length > 0 && enableRoom && (
-                  <div className={`absolute bg-white text-gray-900 drop-shadow  rounded-2xl border-b-4 border-gray-300 px-5 py-3 flex items-center gap-2 top-18`}>
-                    {rooms.map((roomItem) => (
-                      <button
-                        key={roomItem.id}
-                        type="button"
-                        onClick={() => changeRoom(roomItem.name, roomItem.token, roomItem.type, roomItem.secret)}
-                        className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0"
-                      >
-                        <div className="w-full flex flex-col items-center justify-center gap-1">
-                          <div
-                            className="w-10 h-10 bg-cover bg-center"
-                            style={{ backgroundImage: `url(${Man})` }}
-                          ></div>
-                          <h4 className="text-xs text-gray-800 font-medium">{roomItem.name}</h4>
-                        </div>
-                      </button>
-                    ))}
-
+          <section className='relative flex flex-col justify-between h-screen'>
+            {
+              rooms.length > 0 && enableRoom && (
+                <section className="absolute w-1/2 md:w-1/4 top-45 md:top-33 right-5 md:right-5 drop-shadow-2xl rounded-2xl border-4 border-emerald-600 bg-gradient-to-r from-slate-200 via-white to-gray-200 flex justify-center flex-nowrap overflow-x-auto border-4 border-slate-500/20 text-slate-500 gap-5 z-50 rounded-2xl p-5 opacity-90">
+                  {rooms.map((roomItem) => (
                     <button
+                      key={roomItem.id}
                       type="button"
-                      onClick={manualRoom}
-                      className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0"
+                      onClick={() => changeRoom(roomItem.name, roomItem.token, roomItem.type, roomItem.secret)}
+                      className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0 cursor-pointer transition-all ease-in-out"
                     >
                       <div className="w-full flex flex-col items-center justify-center gap-1">
-                        <div className="w-10 h-10 bg-cover bg-center" style={{ backgroundImage: `url(${Custom})` }}></div>
-                        <h4 className="text-xs text-gray-800 font-medium">Manual</h4>
+                        <div
+                          className="w-10 h-10 bg-cover bg-center"
+                          style={{ backgroundImage: `url(${Man})` }}
+                        ></div>
+                        <h4 className="text-xs text-slate-800 font-medium">{roomItem.name}</h4>
                       </div>
                     </button>
+                  ))}
 
-                    <button
-                      type="button"
-                      onClick={secretRoom}
-                      className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0"
-                    >
-                      <div className="w-full flex flex-col items-center justify-center gap-1">
-                        <div className="w-10 h-10 bg-cover bg-center" style={{ backgroundImage: `url(${Secret})` }}></div>
-                        <h4 className="text-xs text-gray-800 font-medium">Secret</h4>
-                      </div>
-                    </button>
+                  <button
+                    type="button"
+                    onClick={manualRoom}
+                    className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0 cursor-pointer transition-all ease-in-out"
+                  >
+                    <div className="w-full flex flex-col items-center justify-center gap-1">
+                      <div className="w-10 h-10 bg-cover bg-center" style={{ backgroundImage: `url(${Custom})` }}></div>
+                      <h4 className="text-xs text-slate-800 font-medium">Manual</h4>
+                    </div>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={secretRoom}
+                    className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0 cursor-pointer transition-all ease-in-out"
+                  >
+                    <div className="w-full flex flex-col items-center justify-center gap-1">
+                      <div className="w-10 h-10 bg-cover bg-center" style={{ backgroundImage: `url(${Secret})` }}></div>
+                      <h4 className="text-xs text-slate-800 font-medium">Secret</h4>
+                    </div>
+                  </button>
+                </section>
+              )
+            }
+            <section className={`relative w-full mx-auto bg-gradient-to-r from-slate-700 via-slate-800 to-slate-700`}>
+              <div className="absolute inset-0 bg-cover bg-center opacity-20 z-0 h-screen" style={{ backgroundImage: `url(${Doodle})` }}></div>
+              <div className={`absolute flex flex-col md:flex-row items-center justify-between gap-5 md:gap-0 w-1/2 md:w-1/3 top-5 right-5 drop-shadow-2xl rounded-2xl border-4 border-emerald-600 bg-gradient-to-r ${connection ? 'from-emerald-500 via-emerald-400 to-emerald-500' : 'from-red-500 via-red-400 to-red-500'} p-5 z-50 opacity-90`}>
+                <div className='flex flex-col items-center gap-2'>
+                  <div className='flex items-center gap-2 text-slate-800'>
+                    <i className="fi fi-rr-user-headset text-xl flex"></i>
+                    <h1 className='font-bold text-xl'>Dashboard {activeRoom.name}</h1>
                   </div>
-                )
-              }
-
-              <div id='container-setting' className='bg-white border-b-4 border-gray-300 drop-shadow rounded-2xl px-5 py-3 flex items-center gap-4'>
-                <button onClick={removeToken} type='button' className='text-sky-700 hover:text-sky-800'>
-                  <i className="fi fi-rr-key"></i>
-                </button>
-                <button onClick={() => bellPlay()} type='button' className='text-sky-700 hover:text-sky-800'>
-                  <i className="fi fi-rr-bell-ring"></i>
-                </button>
-                <a href={`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/download/${activeRoom.token}`} target='_blank' className='text-sky-700 hover:text-sky-800'>
-                  <i className="fi fi-rr-download"></i>
-                </a>
-                <button type='button' onClick={scrollToRef} className={`${connection ? 'text-emerald-500' : 'text-red-500'}`}>
-                  <i className="fi fi-rr-wifi"></i>
-                </button>
+                  <Link to={`/license`} target='_blank' className='block text-center text-xs text-gray-800 hover:text-gray-900 transition-all ease-in-out'>© {new Date().getFullYear()} <span className='font-medium'>Lerian Febriana</span>. All Rights Reserved.</Link>
+                </div>
+                <div className='order-1 md:order-2 flex items-center gap-5'>
+                  <button onClick={bellPlay} type='button' className='text-slate-800 hover:text-slate-900 cursor-pointer transition-all ease-in-out'>
+                    <i className="fi fi-rr-bell-ring flex"></i>
+                  </button>
+                  <button onClick={removeToken} type='button' className='text-slate-800 hover:text-slate-900 cursor-pointer transition-all ease-in-out'>
+                    <i className="fi fi-rr-key flex"></i>
+                  </button>
+                  {
+                    rooms.length > 0 &&
+                    <button onClick={() => setEnableRoom(!enableRoom)} type='button' className='text-slate-800 hover:text-slate-900 cursor-pointer transition-all ease-in-out'>
+                      {
+                        enableRoom ? (
+                          <i className="fi fi-rr-angle-square-up flex"></i>
+                        ) : (
+                          <i className="fi fi-rr-angle-square-down flex"></i>
+                        )
+                      }
+                    </button>
+                  }
+                </div>
               </div>
-            </div>
 
-            <div id='container-chat' className="px-5 flex flex-col gap-3">
-              {chats.length > 0 && chats.map((chat, index) => (
-                <div key={index}>
-                  <div className="w-full bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 rounded-3xl shadow-sm p-8 drop-shadow-xl border-8 border-slate-800">
-                    <div className="space-y-5 md:space-y-10">
-                      <div className="space-y-1 md:space-y-3">
-                        <h3 className="font-bold text-sm md:text-xl text-slate-300">Ruangan {chat.client}</h3>
-                        <p className="text-base md:text-2xl text-slate-100">{chat.message}</p>
-                      </div>
-                      <div className='flex items-center justify-between'>
-                        <a target='_blank' href={`https://google.com/maps?q=${chat.latitude},${chat.longitude}`} className="text-slate-500 hover:text-slate-600 flex items-center gap-1">
-                          <span className="block text-base"><i className="fi fi-rr-marker flex"></i></span>
-                          <span className="block text-base">{moment(chat.date).tz('Asia/Jakarta').format('LLLL')}</span>
-                        </a>
-                        <p className='flex items-center gap-1 text-base text-slate-500'>
-                          <i className="fi fi-rr-circle-user flex"></i>
-                          <span>{chat.name_sender}</span>
-                        </p>
+              <div ref={chatContainerRef} className='relative flex flex-col gap-5 z-10 overflow-y-auto h-screen p-8'>
+                {chats.length > 0 && chats.map((chat, index) => (
+                  <div key={index}>
+                    <div className="w-full flex justify-start items-center gap-3">
+                      <div className="w-full bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 rounded-2xl shadow-sm p-8 drop-shadow-xl border-8 border-slate-800">
+                        <div className="space-y-5 md:space-y-10">
+                          <div className="space-y-1 md:space-y-3">
+                            <h3 className="font-bold text-sm md:text-xl text-slate-300">Ruangan {chat.client}</h3>
+                            <p className="text-base md:text-2xl text-slate-100">{chat.message}</p>
+                          </div>
+                          <div className='flex items-center justify-between'>
+                            <a target='_blank' href={`https://google.com/maps?q=${chat.latitude},${chat.longitude}`} className="text-slate-500 hover:text-slate-600 flex items-center gap-1">
+                              <span className="block text-base"><i className="fi fi-rr-marker flex"></i></span>
+                              <span className="block text-base">{moment(chat.date).tz('Asia/Jakarta').format('LLLL')}</span>
+                            </a>
+                            <p className='flex items-center gap-1 text-base text-slate-500'>
+                              <i className="fi fi-rr-circle-user flex"></i>
+                              <span>{chat.name_sender}</span>
+                            </p>
+                          </div>
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-
+                ))}
+              </div>
+            </section>
           </section>
         ) : (
           <section className='relative bg-sky-800 flex flex-col items-center justify-center h-screen'>

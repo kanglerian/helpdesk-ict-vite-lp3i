@@ -1,12 +1,11 @@
 import { useEffect, useState, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import Lottie from "lottie-react";
+import Lottie from 'lottie-react';
 import axios from 'axios';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import moment from 'moment-timezone';
-import chatAnimation from "../assets/chat-animation.json";
-import BackgroundPattern from '../assets/flatten.png'
+import chatAnimation from '../assets/chat-animation.json';
 import Man from '../assets/man.png'
 import Custom from '../assets/custom.png'
 import Secret from '../assets/secret.png'
@@ -18,7 +17,6 @@ gsap.registerPlugin(useGSAP);
 
 const Admin = () => {
   const navigate = useNavigate();
-  const chatContainerRef = useRef(null);
 
   const containerSend = useRef(null);
   const containerAuth = useRef(null);
@@ -504,7 +502,7 @@ const Admin = () => {
               ))}
             </div>
 
-            <div id='container-message' className='fixed bg-white border-b-8 border-sky-800 p-5 drop-shadow-xl w-11/12 md:w-1/3 mx-auto bottom-3 left-0 right-0 rounded-3xl space-y-3 flex flex-col items-center justify-center'>
+            <div id='container-message' className='fixed bg-white border-b-8 border-sky-800 p-5 drop-shadow-xl w-full max-w-lg mx-auto bottom-3 left-0 right-0 rounded-3xl space-y-3 flex flex-col items-center justify-center'>
               <form onSubmit={sendMessage} className="w-full flex gap-2 max-w-lg mx-auto">
                 <div className="relative w-1/3">
                   <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -536,7 +534,7 @@ const Admin = () => {
 
           </section>
         ) : (
-          <section ref={containerAuth} className='relative bg-sky-800 flex flex-col items-center justify-center h-screen'>
+          <section ref={containerAuth} className='relative bg-sky-800 flex flex-col items-center justify-center h-screen overflow-y-auto'>
             <div className="absolute inset-0 bg-cover bg-center opacity-10 z-0" style={{ backgroundImage: `url(${Doodle})` }}></div>
             <Lottie animationData={chatAnimation} loop={true} className='w-1/3 md:w-1/6' />
             <div className='text-center space-y-5 z-10'>
