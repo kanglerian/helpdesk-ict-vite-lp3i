@@ -4,7 +4,6 @@ import Lottie from "lottie-react";
 import axios from 'axios';
 import moment from 'moment-timezone';
 import chatAnimation from "../assets/chat-animation.json";
-import BackgroundPattern from '../assets/flatten.png'
 import Man from '../assets/man.png'
 import Custom from '../assets/custom.png'
 import Secret from '../assets/secret.png'

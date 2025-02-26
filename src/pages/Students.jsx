@@ -3,8 +3,9 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import Lottie from "lottie-react";
 import moment from 'moment-timezone';
 import axios from 'axios';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
 import chatAnimation from "../assets/chat-animation.json";
-import BackgroundPattern from '../assets/flatten.png'
 import Man from '../assets/man.png'
 import Custom from '../assets/custom.png'
 import Secret from '../assets/secret.png'
@@ -12,9 +13,15 @@ import BellSound from '../assets/bell.mp3'
 import Doodle from '../assets/doodle.png'
 import { socket } from '../socket'
 
+gsap.registerPlugin(useGSAP);
+
 const Students = () => {
   const navigate = useNavigate();
+
   const chatContainerRef = useRef(null);
+  const containerSend = useRef(null);
+  const containerAuth = useRef(null);
+
   const [rooms, setRooms] = useState([]);
   const [chats, setChats] = useState([]);
   const [connection, setConnection] = useState(false);
@@ -115,7 +122,7 @@ const Students = () => {
   }
 
   const manualRoom = () => {
-    const inputManual = prompt('TOKEN:')
+    const inputManual = prompt('TOKEN CUSTOM\nIsi token ruangan yang ingin diakses, contoh: 46155')
     if (inputManual) {
       let data = {
         name: 'Custom',
@@ -129,7 +136,7 @@ const Students = () => {
   }
 
   const secretRoom = () => {
-    const inputManual = prompt('TOKEN SECRET:')
+    const inputManual = prompt('TOKEN SECRET\nIsi token ruangan yang ingin diakses, contoh: 46122')
     if (inputManual) {
       let data = {
         name: 'Secret',
@@ -307,21 +314,158 @@ const Students = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (logged && containerSend.current) {
+      gsap.from('#container-account', {
+        duration: 3,
+        y: -800,
+        rotation: -180,
+        delay: 0.5,
+        ease: "elastic.out(1,0.3)"
+      });
+      gsap.from('#container-chat', {
+        duration: 1,
+        y: -800,
+        opacity: 0,
+        delay: 1.2,
+      });
+      gsap.from('#container-setting', {
+        duration: 3,
+        y: -800,
+        rotation: -180,
+        delay: 0.8,
+        ease: "elastic.out(1,0.3)"
+      });
+      gsap.from('#container-message', {
+        duration: 3,
+        y: -800,
+        rotation: -180,
+        delay: 1.1,
+        ease: "elastic.out(1,0.3)"
+      });
+    }
+
+    if (!logged && containerAuth.current) {
+      gsap.fromTo('#auth-title',{
+        opacity: 0,
+        rotate: 50,
+        y: -50,
+        transformOrigin: 'left top'
+      },{
+        opacity: 1,
+        y: 0,
+        duration: 2,
+        rotate: 0,
+        delay: 0,
+        ease: "elastic.out(1,0.3)",
+      });
+      gsap.fromTo('#auth-description',{
+        opacity: 0,
+        rotate: 50,
+        y: -50,
+        transformOrigin: 'right top'
+      },{
+        opacity: 1,
+        y: 0,
+        duration: 2,
+        rotate: 0,
+        delay: 0.2,
+        ease: "elastic.out(1,0.3)"
+      });
+      gsap.fromTo('#auth-status',{
+        opacity: 0,
+        rotate: 60,
+        y: -100,
+        transformOrigin: 'center top'
+      },{
+        opacity: 1,
+        y: 0,
+        duration: 2,
+        rotate: 0,
+        delay: 0.4,
+        ease: "elastic.out(1,0.3)"
+      });
+      gsap.fromTo('#auth-form',{
+        opacity: 0,
+        y: -200,
+        transformOrigin: 'center top'
+      },{
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        delay: 0.5,
+      });
+      gsap.fromTo('#copyright',{
+        opacity: 0,
+        y: -200,
+        transformOrigin: 'center top'
+      },{
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        delay: 0.6,
+      });
+    }
+  }, [logged]);
+
   return (
     <main className={`bg-[#EDEDED] overflow-hidden`}>
       {
         logged ? (
-          <section className='relative flex flex-col justify-between h-screen'>
-
+          <section ref={containerSend} className='relative flex flex-col justify-between h-screen'>
             <div className="absolute inset-0 bg-cover bg-center opacity-3 z-0 h-screen" style={{ backgroundImage: `url(${Doodle})` }}></div>
 
-
             <div className='absolute w-11/12 flex justify-between gap-5 mx-auto z-10 top-3 left-0 right-0'>
-              <div className={`${connection ? 'bg-emerald-500 border-emerald-700/30' : 'bg-red-500 border-red-700/30'} text-white drop-shadow  rounded-2xl border-b-4 px-5 py-3 flex items-center gap-2`}>
+              <div id='container-account' className={`${connection ? 'bg-emerald-500 border-emerald-700/30' : 'bg-red-500 border-red-700/30'} text-white drop-shadow  rounded-2xl border-b-4 px-5 py-3 flex items-center gap-2`}>
                 <i className={`fi fi-rr-user-headset text-lg flex ${connection ? 'bg-emerald-600' : 'bg-red-600'} p-2 rounded-lg`}></i>
                 <h1 className='font-bold text-sm'>{activeRoom.name}: {client}</h1>
               </div>
-              <div className='bg-white border-b-4 border-gray-300 drop-shadow rounded-2xl px-5 py-3 flex items-center gap-3'>
+              {
+                rooms.length > 0 && enableRoom && (
+                  <div className={`absolute bg-white text-gray-900 drop-shadow  rounded-2xl border-b-4 border-gray-300 px-5 py-3 flex items-center gap-2 top-18`}>
+                    {rooms.map((roomItem) => (
+                      <button
+                        key={roomItem.id}
+                        type="button"
+                        onClick={() => changeRoom(roomItem.name, roomItem.token, roomItem.type, roomItem.secret)}
+                        className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0"
+                      >
+                        <div className="w-full flex flex-col items-center justify-center gap-1">
+                          <div
+                            className="w-10 h-10 bg-cover bg-center"
+                            style={{ backgroundImage: `url(${Man})` }}
+                          ></div>
+                          <h4 className="text-xs text-gray-800 font-medium">{roomItem.name}</h4>
+                        </div>
+                      </button>
+                    ))}
+
+                    <button
+                      type="button"
+                      onClick={manualRoom}
+                      className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0"
+                    >
+                      <div className="w-full flex flex-col items-center justify-center gap-1">
+                        <div className="w-10 h-10 bg-cover bg-center" style={{ backgroundImage: `url(${Custom})` }}></div>
+                        <h4 className="text-xs text-gray-800 font-medium">Manual</h4>
+                      </div>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={secretRoom}
+                      className="w-auto flex flex-col items-center space-y-1 p-1 md:p-0"
+                    >
+                      <div className="w-full flex flex-col items-center justify-center gap-1">
+                        <div className="w-10 h-10 bg-cover bg-center" style={{ backgroundImage: `url(${Secret})` }}></div>
+                        <h4 className="text-xs text-gray-800 font-medium">Secret</h4>
+                      </div>
+                    </button>
+                  </div>
+                )
+              }
+
+              <div id='container-setting' className='bg-white border-b-4 border-gray-300 drop-shadow rounded-2xl px-5 py-3 flex items-center gap-3'>
                 <button onClick={removeToken} type='button' className='text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-key"></i>
                 </button>
@@ -337,13 +481,13 @@ const Students = () => {
               </div>
             </div>
 
-            <div ref={chatContainerRef} className='relative flex flex-col gap-3 overflow-y-auto h-screen p-5 pt-24 pb-52'>
+            <div ref={chatContainerRef} id='container-chat' className='relative flex flex-col gap-3 overflow-y-auto h-screen p-5 pt-24 pb-52'>
               <div className="flex flex-col gap-3">
                 {chats.length > 0 && chats.map((chat, index) => (
                   <div key={index}>
                     {chat.client.toLowerCase() === client.toLowerCase() ? (
                       <div className="flex justify-end">
-                        <div className="relative w-10/12">
+                        <div className="relative w-10/12 md:w-7/12">
                           <div className='space-y-2'>
                             <div className='relative shadow bg-blue-500 p-4 pb-10 rounded-2xl'>
                               <p className='text-white text-sm'>{chat.message}</p>
@@ -373,8 +517,8 @@ const Students = () => {
               </div>
             </div>
 
-            <div className='bg-white border-b-4 border-sky-900/30 absolute p-5 drop-shadow-xl w-11/12 mx-auto bottom-3 rounded-3xl space-y-3 left-0 right-0'>
-              <form onSubmit={sendMessage} className="flex gap-2 max-w-lg mx-auto">
+            <div id='container-message' className='bg-white border-b-8 border-sky-800 absolute p-5 drop-shadow-xl w-11/12 md:w-1/3 mx-auto bottom-3 rounded-3xl space-y-3 left-0 right-0 flex flex-col items-center justify-center'>
+              <form onSubmit={sendMessage} className="w-full flex gap-2 max-w-lg mx-auto">
                 <div className="relative w-full">
                   <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
                     <i className={`fi fi-rr-${canSendMessage ? 'comment' : 'stopwatch'} text-gray-500`}></i>
@@ -388,29 +532,29 @@ const Students = () => {
                   </button>
                 }
               </form>
-              <div className='text-center max-w-sm space-y-2'>
+              <div className='w-full text-center max-w-sm space-y-2'>
                 <div className='space-y-1'>
-                <h5 className='font-bold text-xs text-gray-600'>Catatan:</h5>
-                <p className='text-[11px] text-gray-500 text-center'>Harap berikan deskripsi masalah yang jelas kepada tim ICT kami, sehingga kami dapat memberikan solusi yang tepat.</p>
+                  <h5 className='font-bold text-xs text-gray-600'>Catatan:</h5>
+                  <p className='text-[11px] text-gray-500 text-center'>Harap berikan deskripsi masalah yang jelas kepada tim ICT kami, sehingga kami dapat memberikan solusi yang tepat.</p>
                 </div>
                 <Link to={`/license`} target='_blank' className='block text-[11px] text-gray-700'>© {new Date().getFullYear()} Lerian Febriana. All Rights Reserved.</Link>
               </div>
             </div>
           </section>
         ) : (
-          <section className='relative bg-sky-800 flex flex-col items-center justify-center h-screen'>
+          <section ref={containerAuth} className='relative bg-sky-800 flex flex-col items-center justify-center h-screen'>
             <div className="absolute inset-0 bg-cover bg-center opacity-10 z-0" style={{ backgroundImage: `url(${Doodle})` }}></div>
             <Lottie animationData={chatAnimation} loop={true} className='w-1/3 md:w-1/6' />
             <div className='text-center space-y-5 z-10'>
               <div className='space-y-1'>
-                <h2 className='font-bold text-2xl text-white'>Helpdesk Chat {searchParams.get("room")}</h2>
-                <p className='text-sm text-sky-200'>Make simple chat for quick problem solving.</p>
+                <h2 id="auth-title" className='font-bold text-2xl text-white'>Helpdesk Chat {searchParams.get("room")}</h2>
+                <p id="auth-description" className='text-sm text-sky-200'>Make simple chat for quick problem solving.</p>
               </div>
-              <p className={`${connection ? 'bg-emerald-500' : 'bg-red-500'} text-white text-xs py-2 rounded-xl`}>
+              <p id="auth-status" className={`${connection ? 'bg-emerald-500' : 'bg-red-500'} text-white text-xs py-2 rounded-xl`}>
                 <i className="fi fi-rr-wifi text-[12px] mr-1"></i>
                 <span>{`${connection ? 'Connected' : 'Disconnected'}`}</span>
               </p>
-              <form onSubmit={loginFunc} className='flex flex-col items-center gap-2'>
+              <form id="auth-form" onSubmit={loginFunc} className='flex flex-col items-center gap-2'>
                 <input type="text" id='username' value={username} onChange={(e) => setUsername(e.target.value)} placeholder='Username' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
                 <input type="password" id='password' value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Password' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
                 <input type="number" id='token' value={token} onChange={(e) => setToken(e.target.value)} placeholder='Token' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
@@ -418,7 +562,7 @@ const Students = () => {
                   <span>Sign In</span>
                 </button>
               </form>
-              <Link to={`/license`} target='_blank' className='block text-xs text-sky-400'>© {new Date().getFullYear()} Lerian Febriana. All Rights Reserved.</Link>
+              <Link to={`/license`} target='_blank' id='copyright' className='block text-xs text-sky-400'>© {new Date().getFullYear()} Lerian Febriana. All Rights Reserved.</Link>
             </div>
           </section>
         )
