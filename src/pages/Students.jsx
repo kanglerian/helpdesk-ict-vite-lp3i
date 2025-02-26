@@ -415,7 +415,7 @@ const Students = () => {
           <section ref={containerSend} className='relative flex flex-col justify-between h-screen'>
             <div className="absolute inset-0 bg-cover bg-center opacity-3 z-0 h-screen" style={{ backgroundImage: `url(${Doodle})` }}></div>
 
-            <div className='absolute w-11/12 flex justify-between gap-5 mx-auto z-10 top-3 left-0 right-0'>
+            <div className='absolute w-11/12 flex justify-between gap-5 mx-auto z-10 top-10 left-0 right-0'>
               <div id='container-account' className={`${connection ? 'bg-emerald-500 border-emerald-700/30' : 'bg-red-500 border-red-700/30'} text-white drop-shadow  rounded-2xl border-b-4 px-5 py-3 flex items-center gap-2`}>
                 <i className={`fi fi-rr-user-headset text-lg flex ${connection ? 'bg-emerald-600' : 'bg-red-600'} p-2 rounded-lg`}></i>
                 <h1 className='font-bold text-sm'>{activeRoom.name}: {client}</h1>
@@ -481,7 +481,7 @@ const Students = () => {
               </div>
             </div>
 
-            <div ref={chatContainerRef} id='container-chat' className='relative flex flex-col gap-3 overflow-y-auto h-screen p-5 pt-24 pb-52'>
+            <div ref={chatContainerRef} id='container-chat' className='relative flex flex-col gap-3 overflow-y-auto h-screen p-5 pt-28 pb-64'>
               <div className="flex flex-col gap-3">
                 {chats.length > 0 && chats.map((chat, index) => (
                   <div key={index}>
@@ -517,7 +517,7 @@ const Students = () => {
               </div>
             </div>
 
-            <div id='container-message' className='bg-white border-b-8 border-sky-800 absolute p-5 drop-shadow-xl w-11/12 md:w-1/3 mx-auto bottom-3 rounded-3xl space-y-3 left-0 right-0 flex flex-col items-center justify-center'>
+            <div id='container-message' className='bg-white border-b-8 border-sky-800 absolute p-5 drop-shadow-xl w-11/12 md:w-1/3 mx-auto bottom-10 rounded-3xl space-y-3 left-0 right-0 flex flex-col items-center justify-center'>
               <form onSubmit={sendMessage} className="w-full flex gap-2 max-w-lg mx-auto">
                 <div className="relative w-full">
                   <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
