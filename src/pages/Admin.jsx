@@ -392,8 +392,8 @@ const Admin = () => {
 
             <div className="absolute inset-0 bg-cover bg-center opacity-3 z-0 h-screen" style={{ backgroundImage: `url(${Doodle})` }}></div>
 
-            <div onClick={() => rooms.length > 0 && setEnableRoom(!enableRoom)} className='fixed w-11/12 flex justify-between gap-5 mx-auto z-10 top-5 left-0 right-0'>
-              <div id='container-account' className={`${connection ? 'bg-emerald-500 border-emerald-700/30' : 'bg-red-500 border-red-700/30'} text-white drop-shadow  rounded-2xl border-b-4 px-5 py-3 flex items-center gap-2`}>
+            <div className='fixed w-11/12 flex justify-between gap-5 mx-auto z-10 top-5 left-0 right-0'>
+              <div id='container-account' onClick={() => rooms.length > 0 && setEnableRoom(!enableRoom)} className={`${connection ? 'bg-emerald-500 border-emerald-700/30' : 'bg-red-500 border-red-700/30'} text-white drop-shadow  rounded-2xl border-b-4 px-5 py-3 flex items-center gap-2`}>
                 <i className={`fi fi-rr-user-headset text-lg flex ${connection ? 'bg-emerald-600' : 'bg-red-600'} p-2 rounded-lg`}></i>
                 <h1 className='font-bold text-sm'>{activeRoom.name}: {client}</h1>
                 {
@@ -450,7 +450,7 @@ const Admin = () => {
                 <button onClick={removeToken} type='button' className='text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-key"></i>
                 </button>
-                <button onClick={bellPlay} type='button' className='text-sky-700 hover:text-sky-800'>
+                <button onClick={() => bellPlay()} type='button' className='text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-bell-ring"></i>
                 </button>
                 <a href={`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/download/${activeRoom.token}`} target='_blank' className='text-sky-700 hover:text-sky-800'>
