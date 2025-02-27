@@ -386,14 +386,14 @@ const Admin = () => {
     <main className={`relative bg-[#EDEDED]`}>
       {
         logged ? (
-          <section ref={containerSend} className='flex flex-col overflow-y-auto h-screen pt-26 py-54'>
+          <section ref={containerSend} className='flex flex-col overflow-y-auto h-screen pt-26 py-60'>
 
             <div className="absolute inset-0 bg-cover bg-center opacity-3 z-0 h-screen" style={{ backgroundImage: `url(${Doodle})` }}></div>
 
-            <div className='fixed w-11/12 flex justify-between gap-5 mx-auto z-10 top-5 left-0 right-0'>
+            <div className='fixed w-11/12 flex items-start justify-between gap-5 mx-auto z-10 top-5 left-0 right-0'>
               <div id='container-account' onClick={() => rooms.length > 0 && setEnableRoom(!enableRoom)} className={`${connection ? 'bg-emerald-500 border-emerald-700/30' : 'bg-red-500 border-red-700/30'} text-white drop-shadow  rounded-2xl border-b-4 px-5 py-3 flex items-center gap-2 cursor-pointer`}>
-                <i className={`fi fi-rr-user-headset text-lg flex ${connection ? 'bg-emerald-600' : 'bg-red-600'} p-2 rounded-lg`}></i>
-                <h1 className='font-bold text-sm'>{activeRoom.name}: {client}</h1>
+                <i className={`fi fi-rr-user-headset text-sm flex ${connection ? 'bg-emerald-600' : 'bg-red-600'} p-2 rounded-lg`}></i>
+                <h1 className='font-bold text-xs'>{activeRoom.name}: {client}</h1>
                 {
                   rooms.length > 0 &&
                   <i className="fi fi-rr-dropdown-select flex"></i>
@@ -444,18 +444,18 @@ const Admin = () => {
                 )
               }
 
-              <div id='container-setting' className='bg-white border-b-4 border-gray-300 drop-shadow rounded-2xl px-5 py-3 flex items-center gap-4'>
+              <div id='container-setting' className='bg-white border-b-4 border-gray-300 drop-shadow rounded-2xl px-5 py-3 flex flex-col justify-center items-center gap-3'>
+                <button type='button' onClick={scrollToRef} className={`${connection ? 'text-emerald-500' : 'text-red-500'} cursor-pointer`}>
+                  <i className="fi fi-rr-wifi"></i>
+                </button>
                 <button onClick={removeToken} type='button' className='cursor-pointer text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-key"></i>
-                </button>
-                <button onClick={() => bellPlay()} type='button' className='cursor-pointer text-sky-700 hover:text-sky-800'>
-                  <i className="fi fi-rr-bell-ring"></i>
                 </button>
                 <a href={`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/download/${activeRoom.token}`} target='_blank' className='cursor-pointer text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-download"></i>
                 </a>
-                <button type='button' onClick={scrollToRef} className={`${connection ? 'text-emerald-500' : 'text-red-500'} cursor-pointer`}>
-                  <i className="fi fi-rr-wifi"></i>
+                <button onClick={() => bellPlay()} type='button' className='cursor-pointer text-sky-700 hover:text-sky-800'>
+                  <i className="fi fi-rr-bell-ring"></i>
                 </button>
                 <button onClick={clearChats} type='button' className='cursor-pointer text-red-700 hover:text-red-800'>
                   <i className="fi fi-rr-trash"></i>
@@ -482,19 +482,16 @@ const Admin = () => {
                   ) : (
                     <div className="flex items-center justify-start gap-3">
                       <div className="relative w-10/12">
-                        <div className='space-y-2'>
+                        <div className='space-y-2 cursor-pointer' onClick={() => setReplyMessage(chat.client)}>
                           <div className='relative bg-white shadow p-4 pb-10 rounded-2xl'>
+                            <h5 className='text-gray-900 text-xs font-bold mb-2'>Ruang {chat.client}</h5>
                             <p className='text-gray-900 text-sm'>{chat.message}</p>
+                            <i className="fi fi-rr-undo flex text-[11px] absolute left-4 bottom-4 opacity-20"></i>
                             <small className='absolute right-4 bottom-3 text-[11px] text-gray-400'>
                               {moment(chat.date).tz('Asia/Jakarta').format('llll')}
                             </small>
                           </div>
                         </div>
-                      </div>
-                      <div className="w-1/6">
-                        <button type='button' onClick={() => setReplyMessage(chat.client)} className='text-gray-400 drop-shadow'>
-                          <i className="fi fi-rr-undo"></i>
-                        </button>
                       </div>
                     </div>
                   )}
@@ -502,19 +499,21 @@ const Admin = () => {
               ))}
             </div>
 
-            <div id='container-message' className='fixed bg-white border-b-8 border-sky-800 p-5 drop-shadow-xl w-full max-w-lg mx-auto bottom-3 left-0 right-0 rounded-3xl space-y-3 flex flex-col items-center justify-center'>
+            <div id='container-message' className='fixed bg-white border-b-8 border-sky-800 p-5 drop-shadow-xl w-11/12 md:w-full max-w-lg mx-auto bottom-3 left-0 right-0 rounded-3xl space-y-3 flex flex-col items-center justify-center'>
               <form onSubmit={sendMessage} className="w-full flex gap-2 max-w-lg mx-auto">
-                <div className="relative w-1/3">
-                  <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                    <i className={`fi fi-rr-${canSendMessage ? 'smart-home' : 'stopwatch'} text-gray-500`}></i>
+                <div className='w-full flex flex-col gap-1'>
+                  <div className="relative w-full">
+                    <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                      <i className={`fi fi-rr-${canSendMessage ? 'smart-home' : 'stopwatch'} text-gray-500`}></i>
+                    </div>
+                    <input type="text" value={replyMessage} onChange={(e) => setReplyMessage(e.target.value)} className={`${canSendMessage ? 'bg-gray-50' : 'bg-gray-200'} border border-gray-300 text-gray-900 text-xs rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5`} placeholder='Ruangan' required disabled={!canSendMessage} autoFocus={true} />
                   </div>
-                  <input type="text" value={replyMessage} onChange={(e) => setReplyMessage(e.target.value)} className={`${canSendMessage ? 'bg-gray-50' : 'bg-gray-200'} border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5`} placeholder='Ruangan' required disabled={!canSendMessage} autoFocus={true} />
-                </div>
-                <div className="relative w-2/3">
-                  <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
-                    <i className={`fi fi-rr-${canSendMessage ? 'comment' : 'stopwatch'} text-gray-500`}></i>
+                  <div className="relative w-full">
+                    <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
+                      <i className={`fi fi-rr-${canSendMessage ? 'comment' : 'stopwatch'} text-gray-500`}></i>
+                    </div>
+                    <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} className={`${canSendMessage ? 'bg-gray-50' : 'bg-gray-200'} border border-gray-300 text-gray-900 text-xs rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5`} placeholder={`${canSendMessage ? 'Tulis pesan disini...' : 'Tolong ditunggu selama 2 detik!'}`} required disabled={!canSendMessage} autoFocus={true} />
                   </div>
-                  <input type="text" value={message} onChange={(e) => setMessage(e.target.value)} className={`${canSendMessage ? 'bg-gray-50' : 'bg-gray-200'} border border-gray-300 text-gray-900 text-sm rounded-xl focus:ring-blue-500 focus:border-blue-500 block w-full ps-10 p-2.5`} placeholder={`${canSendMessage ? 'Tulis pesan disini...' : 'Tolong ditunggu selama 2 detik!'}`} required disabled={!canSendMessage} autoFocus={true} />
                 </div>
                 {
                   canSendMessage &&
@@ -524,10 +523,7 @@ const Admin = () => {
                 }
               </form>
               <div className='w-full text-center max-w-sm space-y-2'>
-                <div className='space-y-1'>
-                  <h5 className='font-bold text-xs text-gray-600'>Catatan:</h5>
-                  <p className='text-[11px] text-gray-500 text-center'>Harap berikan deskripsi masalah yang jelas kepada tim ICT kami, sehingga kami dapat memberikan solusi yang tepat.</p>
-                </div>
+                <p className='text-[11px] text-gray-500 text-center'>Harap berikan deskripsi masalah yang jelas kepada tim ICT kami, sehingga kami dapat memberikan solusi yang tepat.</p>
                 <Link to={`/license`} target='_blank' className='block text-[11px] text-gray-700'>© {new Date().getFullYear()} Lerian Febriana. All Rights Reserved.</Link>
               </div>
             </div>
@@ -550,7 +546,7 @@ const Admin = () => {
                 <input type="text" id='username' value={username} onChange={(e) => setUsername(e.target.value)} placeholder='Username' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
                 <input type="password" id='password' value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Password' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
                 <input type="number" id='token' value={token} onChange={(e) => setToken(e.target.value)} placeholder='Token' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
-                <button type="submit" className="w-full flex gap-2 items-center justify-center py-2.5 px-3 text-sm font-medium text-white bg-sky-600 rounded-xl hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-all ease-in-out">
+                <button type="submit" className="w-full flex gap-2 items-center justify-center py-2.5 px-3 text-sm font-medium text-white bg-sky-600 rounded-xl hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-all ease-in-out cursor-pointer">
                   <span>Sign In</span>
                 </button>
               </form>
