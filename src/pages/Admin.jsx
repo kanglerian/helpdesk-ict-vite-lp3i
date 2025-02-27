@@ -444,21 +444,21 @@ const Admin = () => {
                 )
               }
 
-              <div id='container-setting' className='bg-white border-b-4 border-gray-300 drop-shadow rounded-2xl px-5 py-3 flex flex-col justify-center items-center gap-3'>
+              <div id='container-setting' className='bg-white border-b-4 border-gray-300 drop-shadow rounded-2xl px-5 py-3.5 flex flex-col justify-center items-center gap-4'>
                 <button type='button' onClick={scrollToRef} className={`${connection ? 'text-emerald-500' : 'text-red-500'} cursor-pointer`}>
-                  <i className="fi fi-rr-wifi"></i>
+                  <i className="fi fi-rr-wifi flex text-sm"></i>
                 </button>
                 <button onClick={removeToken} type='button' className='cursor-pointer text-sky-700 hover:text-sky-800'>
-                  <i className="fi fi-rr-key"></i>
+                  <i className="fi fi-rr-key flex text-sm"></i>
                 </button>
                 <a href={`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/download/${activeRoom.token}`} target='_blank' className='cursor-pointer text-sky-700 hover:text-sky-800'>
-                  <i className="fi fi-rr-download"></i>
+                  <i className="fi fi-rr-download flex text-sm"></i>
                 </a>
                 <button onClick={() => bellPlay()} type='button' className='cursor-pointer text-sky-700 hover:text-sky-800'>
-                  <i className="fi fi-rr-bell-ring"></i>
+                  <i className="fi fi-rr-bell-ring flex text-sm"></i>
                 </button>
                 <button onClick={clearChats} type='button' className='cursor-pointer text-red-700 hover:text-red-800'>
-                  <i className="fi fi-rr-trash"></i>
+                  <i className="fi fi-rr-trash flex text-sm"></i>
                 </button>
               </div>
             </div>

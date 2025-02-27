@@ -474,12 +474,12 @@ const Students = () => {
                 )
               }
 
-              <div id='container-setting' className='bg-white border-b-4 border-gray-300 drop-shadow rounded-2xl px-5 py-3 flex flex-col justify-center items-center gap-3'>
+              <div id='container-setting' className='bg-white border-b-4 border-gray-300 drop-shadow rounded-2xl px-5 py-3.5 flex flex-col justify-center items-center gap-3.5'>
                 <button type='button' onClick={scrollToRef} className={`${connection ? 'text-emerald-500' : 'text-red-500'} cursor-pointer`}>
-                  <i className="fi fi-rr-wifi"></i>
+                  <i className="fi fi-rr-wifi flex text-sm"></i>
                 </button>
                 <button onClick={removeToken} type='button' className='cursor-pointer text-sky-700 hover:text-sky-800'>
-                  <i className="fi fi-rr-key"></i>
+                  <i className="fi fi-rr-key flex text-sm"></i>
                 </button>
               </div>
             </div>
