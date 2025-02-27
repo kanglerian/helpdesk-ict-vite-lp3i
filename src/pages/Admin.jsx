@@ -4,6 +4,7 @@ import Lottie from 'lottie-react';
 import axios from 'axios';
 import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
+import QRCode from 'qrcode';
 import moment from 'moment-timezone';
 import chatAnimation from '../assets/chat-animation.json';
 import Man from '../assets/man.png'
@@ -58,7 +59,7 @@ const Admin = () => {
   }
 
   const getRooms = async () => {
-    await axios.get('https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/rooms', {
+    await axios.get('${import.meta.env.VITE_BACKEND}/rooms', {
       headers: {
         'lp3i-api-key': 'bdaeaa3274ac0f2d'
       }
@@ -74,7 +75,7 @@ const Admin = () => {
   const clearChats = async () => {
     const confirmed = confirm(`Apakah anda yakin akan menghapus pesan ${activeRoom.name}?`);
     if (confirmed) {
-      await axios.delete(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/${activeRoom.token}`, {
+      await axios.delete(`${import.meta.env.VITE_BACKEND}/chats/${activeRoom.token}`, {
         headers: {
           'lp3i-api-key': 'bdaeaa3274ac0f2d'
         }
@@ -90,7 +91,7 @@ const Admin = () => {
   }
 
   const getChats = async (roomActive) => {
-    await axios.get(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/admin/${roomActive.token}`, {
+    await axios.get(`${import.meta.env.VITE_BACKEND}/chats/admin/${roomActive.token}`, {
       headers: {
         'lp3i-api-key': 'bdaeaa3274ac0f2d'
       }
@@ -202,10 +203,24 @@ const Admin = () => {
     audio.play();
   }
 
+  const generateQRcode = () => {
+    const data = prompt("QR CODE\nIsi data yang ingin dijadikan QR Code, contoh: Lab Komputer 4");
+    QRCode.toDataURL(`${import.meta.env.VITE_FRONTEND}?room=${encodeURI(data)}`, {
+      scale: 50,
+    }, function (err, url) {
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${data.replace(/\s+/g, "_")}.png`;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+    });
+  }
+
   const loginFunc = async (e) => {
     e.preventDefault();
     try {
-      const responseUser = await axios.post(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/auth/admin/login`, {
+      const responseUser = await axios.post(`${import.meta.env.VITE_BACKEND}/auth/admin/login`, {
         username: username,
         password: password
       }, {
@@ -213,7 +228,7 @@ const Admin = () => {
           'lp3i-api-key': 'bdaeaa3274ac0f2d'
         }
       });
-      const responseRoom = await axios.get(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/rooms/${token}`, {
+      const responseRoom = await axios.get(`${import.meta.env.VITE_BACKEND}/rooms/${token}`, {
         headers: {
           'lp3i-api-key': 'bdaeaa3274ac0f2d'
         }
@@ -389,7 +404,6 @@ const Admin = () => {
           <section ref={containerSend} className='flex flex-col overflow-y-auto h-screen pt-26 py-60'>
 
             <div className="absolute inset-0 bg-cover bg-center opacity-3 z-0 h-screen" style={{ backgroundImage: `url(${Doodle})` }}></div>
-
             <div className='fixed w-11/12 flex items-start justify-between gap-5 mx-auto z-10 top-5 left-0 right-0'>
               <div id='container-account' onClick={() => rooms.length > 0 && setEnableRoom(!enableRoom)} className={`${connection ? 'bg-emerald-500 border-emerald-700/30' : 'bg-red-500 border-red-700/30'} text-white drop-shadow  rounded-2xl border-b-4 px-5 py-3 flex items-center gap-2 cursor-pointer`}>
                 <i className={`fi fi-rr-user-headset text-sm flex ${connection ? 'bg-emerald-600' : 'bg-red-600'} p-2 rounded-lg`}></i>
@@ -451,9 +465,12 @@ const Admin = () => {
                 <button onClick={removeToken} type='button' className='cursor-pointer text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-key flex text-sm"></i>
                 </button>
-                <a href={`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/download/${activeRoom.token}`} target='_blank' className='cursor-pointer text-sky-700 hover:text-sky-800'>
+                <a href={`${import.meta.env.VITE_BACKEND}/chats/download/${activeRoom.token}`} target='_blank' className='cursor-pointer text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-download flex text-sm"></i>
                 </a>
+                <button onClick={() => generateQRcode()} type='button' className='cursor-pointer text-sky-700 hover:text-sky-800'>
+                  <i className="fi fi-rr-qrcode flex text-sm"></i>
+                </button>
                 <button onClick={() => bellPlay()} type='button' className='cursor-pointer text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-bell-ring flex text-sm"></i>
                 </button>

@@ -52,7 +52,7 @@ const Dashboard = () => {
   }
 
   const getRooms = async () => {
-    await axios.get('https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/rooms', {
+    await axios.get(`${import.meta.env.VITE_BACKEND}/rooms`, {
       headers: {
         'lp3i-api-key': 'bdaeaa3274ac0f2d'
       }
@@ -66,7 +66,7 @@ const Dashboard = () => {
   }
 
   const getChats = async (roomActive) => {
-    await axios.get(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/dashboard/${roomActive.token}`, {
+    await axios.get(`${import.meta.env.VITE_BACKEND}/chats/dashboard/${roomActive.token}`, {
       headers: {
         'lp3i-api-key': 'bdaeaa3274ac0f2d'
       }
@@ -150,7 +150,7 @@ const Dashboard = () => {
   const loginFunc = async (e) => {
     e.preventDefault();
     try {
-      const responseUser = await axios.post(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/auth/admin/login`, {
+      const responseUser = await axios.post(`${import.meta.env.VITE_BACKEND}/auth/admin/login`, {
         username: username,
         password: password
       }, {
@@ -158,7 +158,7 @@ const Dashboard = () => {
           'lp3i-api-key': 'bdaeaa3274ac0f2d'
         }
       });
-      const responseRoom = await axios.get(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/rooms/${token}`, {
+      const responseRoom = await axios.get(`${import.meta.env.VITE_BACKEND}/rooms/${token}`, {
         headers: {
           'lp3i-api-key': 'bdaeaa3274ac0f2d'
         }
@@ -301,7 +301,7 @@ const Dashboard = () => {
                 <button onClick={() => bellPlay()} type='button' className='cursor-pointer text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-bell-ring"></i>
                 </button>
-                <a href={`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/download/${activeRoom.token}`} target='_blank' className='cursor-pointer text-sky-700 hover:text-sky-800'>
+                <a href={`${import.meta.env.VITE_BACKEND}/chats/download/${activeRoom.token}`} target='_blank' className='cursor-pointer text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-download"></i>
                 </a>
                 <button type='button' onClick={scrollToRef} className={`${connection ? 'text-emerald-500' : 'text-red-500'} cursor-pointer`}>

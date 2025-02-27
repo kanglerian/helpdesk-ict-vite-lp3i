@@ -66,7 +66,7 @@ const Students = () => {
   }
 
   const getRooms = async () => {
-    await axios.get('https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/rooms', {
+    await axios.get(`${import.meta.env.VITE_BACKEND}/rooms`, {
       headers: {
         'lp3i-api-key': 'bdaeaa3274ac0f2d'
       }
@@ -80,7 +80,7 @@ const Students = () => {
   }
 
   const getChats = async (roomActive, roomParams) => {
-    await axios.get(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/chats/student/${roomActive.token}/${roomParams}`, {
+    await axios.get(`${import.meta.env.VITE_BACKEND}/chats/student/${roomActive.token}/${roomParams}`, {
       headers: {
         'lp3i-api-key': 'bdaeaa3274ac0f2d'
       }
@@ -208,7 +208,7 @@ const Students = () => {
   const loginFunc = async (e) => {
     e.preventDefault();
     try {
-      const responseUser = await axios.post(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/auth/login`, {
+      const responseUser = await axios.post(`${import.meta.env.VITE_BACKEND}/auth/login`, {
         username: username,
         password: password
       }, {
@@ -216,7 +216,7 @@ const Students = () => {
           'lp3i-api-key': 'bdaeaa3274ac0f2d'
         }
       });
-      const responseRoom = await axios.get(`https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id/rooms/${token}`, {
+      const responseRoom = await axios.get(`${import.meta.env.VITE_BACKEND}/rooms/${token}`, {
         headers: {
           'lp3i-api-key': 'bdaeaa3274ac0f2d'
         }

@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "vite",
     "dev:host": "vite --host",
-    "build": "vite build && cp .htaccess dist/.htaccess",
+    "build": "vite build && cp .htaccess dist/.htaccess && cp .env.example dist/.env.example",
     "lint": "eslint . --ext js,jsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview"
   },
@@ -16,11 +16,13 @@
     "@tailwindcss/cli": "^4.0.8",
     "@tailwindcss/vite": "^4.0.8",
     "axios": "^1.7.2",
+    "dotenv": "^16.4.7",
     "gsap": "^3.12.7",
     "localforage": "^1.10.0",
     "lottie-react": "^2.4.0",
     "match-sorter": "^6.3.4",
     "moment-timezone": "^0.5.45",
+    "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^6.24.0",

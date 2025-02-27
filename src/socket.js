@@ -1,3 +1,3 @@
 import { io } from 'socket.io-client';
-const URL = 'https://helpdesk-backend.politekniklp3i-tasikmalaya.ac.id';
+const URL = import.meta.env.VITE_BACKEND;
 export const socket = io(URL);
