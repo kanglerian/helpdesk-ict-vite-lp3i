@@ -31,9 +31,9 @@ const Students = () => {
   const [activeRoom, setActiveRoom] = useState(null);
   const [enableRoom, setEnableRoom] = useState(false);
   const [logged, setLogged] = useState(false);
-  const [username, setUsername] = useState(searchParams.get("username") || 'student');
-  const [password, setPassword] = useState(searchParams.get("password") || 'helpdeskstudent');
-  const [token, setToken] = useState(searchParams.get("token") || '46150');
+  const [username, setUsername] = useState(searchParams.get("username") || '');
+  const [password, setPassword] = useState(searchParams.get("password") || '');
+  const [token, setToken] = useState(searchParams.get("token") || '');
   const [message, setMessage] = useState('');
   const [canSendMessage, setCanSendMessage] = useState(true);
   const [moveButton, setMoveButton] = useState(true);
@@ -46,7 +46,7 @@ const Students = () => {
     const queryRoomParams = searchParams.get("room");
     const queryTokenParams = searchParams.get("token");
     const roomParams = queryRoomParams || 'anonymous';
-    const tokenParams = queryTokenParams || '46150';
+    const tokenParams = queryTokenParams || '';
     const room = localStorage.getItem('HELPDESK:room');
     const account = localStorage.getItem('HELPDESK:account');
     setClient(roomParams)
@@ -216,8 +216,18 @@ const Students = () => {
     audio.play();
   }
 
+  const autoLogin = () => {
+    if(username && password && token) {
+      setTimeout(() => {
+        loginFunc();
+      }, 2000);
+    }
+  }
+
   const loginFunc = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) {
+      e.preventDefault();
+    }
     try {
       const responseUser = await axios.post(`${import.meta.env.VITE_BACKEND}/auth/login`, {
         username: username,
@@ -260,6 +270,7 @@ const Students = () => {
 
   useEffect(() => {
     Authentication();
+    autoLogin();
     getLocation();
 
     setTimeout(() => {

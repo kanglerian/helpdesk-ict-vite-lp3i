@@ -270,8 +270,18 @@ const Admin = () => {
     });
   }
 
+  const autoLogin = () => {
+    if(username && password && token) {
+      setTimeout(() => {
+        loginFunc();
+      }, 2000);
+    }
+  }
+
   const loginFunc = async (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) {
+      e.preventDefault();
+    }
     try {
       const responseUser = await axios.post(`${import.meta.env.VITE_BACKEND}/auth/admin/login`, {
         username: username,
@@ -314,6 +324,7 @@ const Admin = () => {
 
   useEffect(() => {
     Authentication();
+    autoLogin();
 
     setTimeout(() => {
       scrollToRef();
