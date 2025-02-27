@@ -31,9 +31,9 @@ const Students = () => {
   const [activeRoom, setActiveRoom] = useState(null);
   const [enableRoom, setEnableRoom] = useState(false);
   const [logged, setLogged] = useState(false);
-  const [username, setUsername] = useState(searchParams.get("username") || '');
-  const [password, setPassword] = useState(searchParams.get("password") || '');
-  const [token, setToken] = useState(searchParams.get("token") || '');
+  const [username, setUsername] = useState(searchParams.get("username") || 'student');
+  const [password, setPassword] = useState(searchParams.get("password") || 'helpdeskstudent');
+  const [token, setToken] = useState(searchParams.get("token") || '46150');
   const [message, setMessage] = useState('');
   const [canSendMessage, setCanSendMessage] = useState(true);
   const [moveButton, setMoveButton] = useState(true);
