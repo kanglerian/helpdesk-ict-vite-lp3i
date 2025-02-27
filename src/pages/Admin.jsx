@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import Lottie from 'lottie-react';
 import axios from 'axios';
 import gsap from 'gsap';
@@ -25,15 +25,16 @@ const Admin = () => {
   const [rooms, setRooms] = useState([]);
   const [chats, setChats] = useState([]);
   const [connection, setConnection] = useState(false);
+  const [searchParams] = useSearchParams();
 
   const client = 'Administrator';
   const [activeRoom, setActiveRoom] = useState(null);
 
   const [enableRoom, setEnableRoom] = useState(false);
   const [logged, setLogged] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [token, setToken] = useState('');
+  const [username, setUsername] = useState(searchParams.get("username") || '');
+  const [password, setPassword] = useState(searchParams.get("password") || '');
+  const [token, setToken] = useState(searchParams.get("token") || '');
   const [replyMessage, setReplyMessage] = useState('');
   const [message, setMessage] = useState('');
   const [canSendMessage, setCanSendMessage] = useState(true);
@@ -59,9 +60,9 @@ const Admin = () => {
   }
 
   const getRooms = async () => {
-    await axios.get('${import.meta.env.VITE_BACKEND}/rooms', {
+    await axios.get(`${import.meta.env.VITE_BACKEND}/rooms`, {
       headers: {
-        'lp3i-api-key': 'bdaeaa3274ac0f2d'
+        'api-key': 'bdaeaa3274ac0f2d'
       }
     })
       .then((response) => {
@@ -77,7 +78,7 @@ const Admin = () => {
     if (confirmed) {
       await axios.delete(`${import.meta.env.VITE_BACKEND}/chats/${activeRoom.token}`, {
         headers: {
-          'lp3i-api-key': 'bdaeaa3274ac0f2d'
+          'api-key': 'bdaeaa3274ac0f2d'
         }
       })
         .then((response) => {
@@ -93,7 +94,7 @@ const Admin = () => {
   const getChats = async (roomActive) => {
     await axios.get(`${import.meta.env.VITE_BACKEND}/chats/admin/${roomActive.token}`, {
       headers: {
-        'lp3i-api-key': 'bdaeaa3274ac0f2d'
+        'api-key': 'bdaeaa3274ac0f2d'
       }
     })
       .then((response) => {
@@ -203,11 +204,63 @@ const Admin = () => {
     audio.play();
   }
 
+  const createRoom = async () => {
+    const roomName = prompt('Nama Ruangan\nIsi nama room chat yang ingin dibuat, contoh: Divisi IT');
+    if (roomName) {
+      const roomToken = prompt('Token Ruangan\nIsi token ruangan yang ingin dibuat, contoh: 46155');
+      if (roomToken) {
+        const data = {
+          name: roomName,
+          token: roomToken,
+          type: false,
+          secret: false,
+        }
+        await axios.post(`${import.meta.env.VITE_BACKEND}/rooms`, data, {
+          headers: { 'api-key': 'bdaeaa3274ac0f2d' }
+        })
+          .then((response) => {
+            alert(response.data.message);
+            getRooms();
+          })
+          .catch(() => {
+            alert(`Gagal membuat ruangan baru!`);
+          });
+      }
+    }
+  }
+
+  const deleteRoom = async (room) => {
+    const confirmed = prompt(`Hapus Ruangan\nMasukkan token ruangan yang ingin dihapus, contoh: ${room.token}`);
+    if (confirmed) {
+      await axios.delete(`${import.meta.env.VITE_BACKEND}/rooms/${room.token}`, {
+        headers: { 'api-key': 'bdaeaa3274ac0f2d' }
+      })
+        .then((response) => {
+          alert(response.data.message);
+          changeRoom('Utama', '46150', true, false);
+        })
+        .catch((error) => {
+          if (error.message.includes("Invalid URI")) {
+            alert("Gagal membuat QR Code: URL tidak valid!");
+          } else if (error.message.includes("NetworkError")) {
+            alert("Gagal: Periksa koneksi internet Anda.");
+          } else if (error.message.includes("QuotaExceededError")) {
+            alert("Gagal: Penyimpanan browser penuh, coba hapus cache.");
+          } else {
+            alert(`Terjadi kesalahan: ${error.response.data.message}`);
+          }
+        });
+    }
+  }
+
   const generateQRcode = () => {
     const data = prompt("QR CODE\nIsi data yang ingin dijadikan QR Code, contoh: Lab Komputer 4");
     QRCode.toDataURL(`${import.meta.env.VITE_FRONTEND}?room=${encodeURI(data)}`, {
       scale: 50,
     }, function (err, url) {
+      if (err) {
+        return alert('QR Code gagal dibuat!');
+      }
       const a = document.createElement("a");
       a.href = url;
       a.download = `${data.replace(/\s+/g, "_")}.png`;
@@ -225,12 +278,12 @@ const Admin = () => {
         password: password
       }, {
         headers: {
-          'lp3i-api-key': 'bdaeaa3274ac0f2d'
+          'api-key': 'bdaeaa3274ac0f2d'
         }
       });
       const responseRoom = await axios.get(`${import.meta.env.VITE_BACKEND}/rooms/${token}`, {
         headers: {
-          'lp3i-api-key': 'bdaeaa3274ac0f2d'
+          'api-key': 'bdaeaa3274ac0f2d'
         }
       })
       const dataUser = responseUser.data;
@@ -415,7 +468,7 @@ const Admin = () => {
               </div>
               {
                 rooms.length > 0 && enableRoom && (
-                  <div className={`absolute bg-white text-gray-900 drop-shadow  rounded-2xl border-b-4 border-gray-300 px-5 py-3 flex items-center gap-2 top-18`}>
+                  <div className={`absolute bg-white text-gray-900 drop-shadow  rounded-2xl border-b-4 border-gray-300 px-5 py-3 grid grid-cols-3 items-center gap-2 top-18`}>
                     {rooms.map((roomItem) => (
                       <button
                         key={roomItem.id}
@@ -471,11 +524,17 @@ const Admin = () => {
                 <button onClick={() => generateQRcode()} type='button' className='cursor-pointer text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-qrcode flex text-sm"></i>
                 </button>
+                <button onClick={() => createRoom()} type='button' className='cursor-pointer text-sky-700 hover:text-sky-800'>
+                  <i className="fi fi-rr-smart-home flex text-sm"></i>
+                </button>
                 <button onClick={() => bellPlay()} type='button' className='cursor-pointer text-sky-700 hover:text-sky-800'>
                   <i className="fi fi-rr-bell-ring flex text-sm"></i>
                 </button>
                 <button onClick={clearChats} type='button' className='cursor-pointer text-red-700 hover:text-red-800'>
                   <i className="fi fi-rr-trash flex text-sm"></i>
+                </button>
+                <button onClick={() => deleteRoom(activeRoom)} type='button' className='cursor-pointer text-red-700 hover:text-red-800'>
+                  <i className="fi fi-rr-smart-home flex text-sm"></i>
                 </button>
               </div>
             </div>

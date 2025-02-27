@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import Lottie from "lottie-react";
 import axios from 'axios';
 import moment from 'moment-timezone';
@@ -15,11 +15,11 @@ const Dashboard = () => {
   const navigate = useNavigate();
 
   const containerSend = useRef(null);
-  const chatContainerRef = useRef(null);
 
   const [rooms, setRooms] = useState([]);
   const [chats, setChats] = useState([]);
   const [connection, setConnection] = useState(false);
+  const [searchParams] = useSearchParams();
 
   const [activeRoom, setActiveRoom] = useState({
     name: 'Loading...'
@@ -27,9 +27,9 @@ const Dashboard = () => {
 
   const [enableRoom, setEnableRoom] = useState(false);
   const [logged, setLogged] = useState(false);
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
-  const [token, setToken] = useState('46150');
+  const [username, setUsername] = useState(searchParams.get("username") || '');
+  const [password, setPassword] = useState(searchParams.get("password") || '');
+  const [token, setToken] = useState(searchParams.get("token") || '');
 
   const Authentication = () => {
     const room = localStorage.getItem('HELPDESK:room_dashboard');
@@ -54,7 +54,7 @@ const Dashboard = () => {
   const getRooms = async () => {
     await axios.get(`${import.meta.env.VITE_BACKEND}/rooms`, {
       headers: {
-        'lp3i-api-key': 'bdaeaa3274ac0f2d'
+        'api-key': 'bdaeaa3274ac0f2d'
       }
     })
       .then((response) => {
@@ -68,7 +68,7 @@ const Dashboard = () => {
   const getChats = async (roomActive) => {
     await axios.get(`${import.meta.env.VITE_BACKEND}/chats/dashboard/${roomActive.token}`, {
       headers: {
-        'lp3i-api-key': 'bdaeaa3274ac0f2d'
+        'api-key': 'bdaeaa3274ac0f2d'
       }
     })
       .then((response) => {
@@ -155,12 +155,12 @@ const Dashboard = () => {
         password: password
       }, {
         headers: {
-          'lp3i-api-key': 'bdaeaa3274ac0f2d'
+          'api-key': 'bdaeaa3274ac0f2d'
         }
       });
       const responseRoom = await axios.get(`${import.meta.env.VITE_BACKEND}/rooms/${token}`, {
         headers: {
-          'lp3i-api-key': 'bdaeaa3274ac0f2d'
+          'api-key': 'bdaeaa3274ac0f2d'
         }
       });
       const dataUser = responseUser.data;
@@ -251,7 +251,7 @@ const Dashboard = () => {
               </div>
               {
                 rooms.length > 0 && enableRoom && (
-                  <div className={`absolute bg-white text-gray-900 drop-shadow  rounded-2xl border-b-4 border-gray-300 px-5 py-3 flex items-center gap-2 top-18`}>
+                  <div className={`absolute bg-white text-gray-900 drop-shadow  rounded-2xl border-b-4 border-gray-300 px-5 py-3 grid grid-cols-3 items-center gap-2 top-18`}>
                     {rooms.map((roomItem) => (
                       <button
                         key={roomItem.id}
@@ -352,7 +352,7 @@ const Dashboard = () => {
               <form onSubmit={loginFunc} className='flex flex-col items-center gap-2'>
                 <input type="text" id='username' value={username} onChange={(e) => setUsername(e.target.value)} placeholder='Username' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
                 <input type="password" id='password' value={password} onChange={(e) => setPassword(e.target.value)} placeholder='Password' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
-                <input type="number" id='token' onChange={(e) => setToken(e.target.value)} placeholder='Token' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
+                <input type="number" id='token' value={token} onChange={(e) => setToken(e.target.value)} placeholder='Token' className='bg-sky-100 text-sky-900 text-sm rounded-xl block w-full px-4 py-2.5 border border-sky-800 focus:ring-sky-500 focus:border-sky-500' required />
                 <button type="submit" className="w-full flex gap-2 items-center justify-center py-2.5 px-3 text-sm font-medium text-white bg-sky-600 rounded-xl hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-all ease-in-out cursor-pointer">
                   <span>Sign In</span>
                 </button>

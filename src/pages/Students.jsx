@@ -31,11 +31,14 @@ const Students = () => {
   const [activeRoom, setActiveRoom] = useState(null);
   const [enableRoom, setEnableRoom] = useState(false);
   const [logged, setLogged] = useState(false);
-  const [username, setUsername] = useState('student');
-  const [password, setPassword] = useState('helpdeskstudent');
-  const [token, setToken] = useState('46150');
+  const [username, setUsername] = useState(searchParams.get("username") || '');
+  const [password, setPassword] = useState(searchParams.get("password") || '');
+  const [token, setToken] = useState(searchParams.get("token") || '');
   const [message, setMessage] = useState('');
   const [canSendMessage, setCanSendMessage] = useState(true);
+  const [moveButton, setMoveButton] = useState(true);
+  const [messageButton, setMessageButton] = useState(true);
+  const [finishButton, setFinishButton] = useState(true);
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
 
@@ -68,7 +71,7 @@ const Students = () => {
   const getRooms = async () => {
     await axios.get(`${import.meta.env.VITE_BACKEND}/rooms`, {
       headers: {
-        'lp3i-api-key': 'bdaeaa3274ac0f2d'
+        'api-key': 'bdaeaa3274ac0f2d'
       }
     })
       .then((response) => {
@@ -82,7 +85,7 @@ const Students = () => {
   const getChats = async (roomActive, roomParams) => {
     await axios.get(`${import.meta.env.VITE_BACKEND}/chats/student/${roomActive.token}/${roomParams}`, {
       headers: {
-        'lp3i-api-key': 'bdaeaa3274ac0f2d'
+        'api-key': 'bdaeaa3274ac0f2d'
       }
     })
       .then((response) => {
@@ -161,31 +164,39 @@ const Students = () => {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    const accountStringify = localStorage.getItem('HELPDESK:account');
-    const roomStringify = localStorage.getItem('HELPDESK:room');
-    if (accountStringify && roomStringify) {
-      const accountParse = JSON.parse(accountStringify);
-      const roomParse = JSON.parse(roomStringify);
-      const dataChat = {
-        client: client,
-        name_room: roomParse.name,
-        token: roomParse.token,
-        not_save: roomParse.secret,
-        uuid_sender: accountParse.uuid,
-        name_sender: accountParse.name,
-        role_sender: accountParse.role,
-        message: message,
-        reply: null,
-        date: new Date(),
-        latitude: latitude,
-        longitude: longitude
+    if (moveButton) {
+      setMoveButton(false);
+      setMessageButton(false);
+      setFinishButton(false);
+    } else {
+      const accountStringify = localStorage.getItem('HELPDESK:account');
+      const roomStringify = localStorage.getItem('HELPDESK:room');
+      if (accountStringify && roomStringify) {
+        const accountParse = JSON.parse(accountStringify);
+        const roomParse = JSON.parse(roomStringify);
+        const dataChat = {
+          client: client,
+          name_room: roomParse.name,
+          token: roomParse.token,
+          not_save: roomParse.secret,
+          uuid_sender: accountParse.uuid,
+          name_sender: accountParse.name,
+          role_sender: accountParse.role,
+          message: message,
+          reply: null,
+          date: new Date(),
+          latitude: latitude,
+          longitude: longitude
+        }
+        setCanSendMessage(false);
+        socket.emit('message', dataChat)
+        setMessage('');
+        setMessageButton(true);
+        setFinishButton(true);
+        setTimeout(() => {
+          setCanSendMessage(true);
+        }, 7000);
       }
-      setCanSendMessage(false);
-      socket.emit('message', dataChat)
-      setMessage('');
-      setTimeout(() => {
-        setCanSendMessage(true);
-      }, 7000);
     }
   }
 
@@ -213,12 +224,12 @@ const Students = () => {
         password: password
       }, {
         headers: {
-          'lp3i-api-key': 'bdaeaa3274ac0f2d'
+          'api-key': 'bdaeaa3274ac0f2d'
         }
       });
       const responseRoom = await axios.get(`${import.meta.env.VITE_BACKEND}/rooms/${token}`, {
         headers: {
-          'lp3i-api-key': 'bdaeaa3274ac0f2d'
+          'api-key': 'bdaeaa3274ac0f2d'
         }
       });
       const dataUser = responseUser.data;
@@ -431,7 +442,7 @@ const Students = () => {
               </div>
               {
                 rooms.length > 0 && enableRoom && (
-                  <div className={`absolute bg-white text-gray-900 drop-shadow  rounded-2xl border-b-4 border-gray-300 px-5 py-3 flex items-center gap-2 top-18`}>
+                  <div className={`absolute bg-white text-gray-900 drop-shadow  rounded-2xl border-b-4 border-gray-300 px-5 py-3 grid grid-cols-3 items-center gap-2 top-18`}>
                     {rooms.map((roomItem) => (
                       <button
                         key={roomItem.id}
@@ -519,7 +530,15 @@ const Students = () => {
             </div>
 
             <div id='container-message' className='fixed bg-white border-b-8 border-sky-800 p-5 drop-shadow-xl w-11/12 md:w-full max-w-lg mx-auto bottom-3 left-0 right-0 rounded-3xl space-y-3 flex flex-col items-center justify-center rotate-3'>
-              <p className='text-sm font-medium text-gray-700'>Belok dikit gapapa 🤣</p>
+              <p className='text-sm font-medium text-gray-700'>
+                {
+                  messageButton ? (
+                    'Belok dikit gapapa 🤣'
+                  ) : (
+                    'Eits, klik lagi! 🤣'
+                  )
+                }
+              </p>
               <form onSubmit={sendMessage} className="w-full flex gap-2 max-w-lg mx-auto">
                 <div className="relative w-full">
                   <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
@@ -529,7 +548,7 @@ const Students = () => {
                 </div>
                 {
                   canSendMessage &&
-                  <button type="submit" className="flex gap-2 items-center justify-center py-2.5 px-4 text-sm font-medium text-white bg-sky-600 rounded-xl hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-blue-300">
+                  <button type="submit" className={`relative flex gap-2 items-center justify-center py-2.5 px-4 text-sm font-medium text-white ${finishButton ? 'top-0' : 'top-[-60px]'} rounded-xl bg-sky-600 hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-blue-300`}>
                     <i className="flex fi fi-rr-paper-plane"></i>
                   </button>
                 }
