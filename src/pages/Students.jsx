@@ -33,7 +33,7 @@ const Students = () => {
   const [logged, setLogged] = useState(false);
   const [username, setUsername] = useState(searchParams.get("username") || '');
   const [password, setPassword] = useState(searchParams.get("password") || '');
-  const [token, setToken] = useState(searchParams.get("token") || '46150');
+  const [token, setToken] = useState(searchParams.get("token"));
   const [message, setMessage] = useState('');
   const [canSendMessage, setCanSendMessage] = useState(true);
   const [moveButton, setMoveButton] = useState(true);
@@ -46,7 +46,7 @@ const Students = () => {
     const queryRoomParams = searchParams.get("room");
     const queryTokenParams = searchParams.get("token");
     const roomParams = queryRoomParams || 'anonymous';
-    const tokenParams = queryTokenParams || '';
+    const tokenParams = queryTokenParams || '46150';
     const room = localStorage.getItem('HELPDESK:room');
     const account = localStorage.getItem('HELPDESK:account');
     setClient(roomParams)
