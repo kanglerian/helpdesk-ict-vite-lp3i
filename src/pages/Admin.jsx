@@ -253,25 +253,69 @@ const Admin = () => {
     }
   }
 
-  const generateQRcode = () => {
-    const data = prompt("QR CODE\nIsi data yang ingin dijadikan QR Code, contoh: Lab Komputer 4");
-    QRCode.toDataURL(`${import.meta.env.VITE_FRONTEND}?room=${encodeURI(data)}`, {
-      scale: 50,
-    }, function (err, url) {
-      if (err) {
-        return alert('QR Code gagal dibuat!');
+  const generateQRcode = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_BACKEND}/users/auto`, {
+        headers: { 'api-key': 'bdaeaa3274ac0f2d' }
+      });
+      const name = prompt("QR Code\nIsi data yang ingin dijadikan QR Code, contoh: Lab Komputer 4");
+      if (name) {
+        const autologin = prompt("Auto Login\njika setuju, isi 'yes' untuk login otomatis, jika tidak, isi 'no'");
+        if (autologin && autologin.toLocaleLowerCase() === 'yes') {
+          const room = localStorage.getItem('HELPDESK:room_admin');
+          if (room) {
+            QRCode.toDataURL(`${import.meta.env.VITE_FRONTEND}?room=${encodeURI(name)}&username=${response.data.username}&password=${response.data.password}&token=${encodeURI(JSON.parse(room).token)}`, {
+              scale: 50,
+            }, function (err, url) {
+              if (err) {
+                return alert('QR Code gagal dibuat!');
+              }
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `HelpdeskICT-${name.replace(/\s+/g, "_")}-${JSON.parse(room).name}-autologin.png`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            });
+          }
+        } else {
+          const room = localStorage.getItem('HELPDESK:room_admin');
+          if (room) {
+            QRCode.toDataURL(`${import.meta.env.VITE_FRONTEND}?room=${encodeURI(name)}&token=${encodeURI(JSON.parse(room).token)}`, {
+              scale: 50,
+            }, function (err, url) {
+              if (err) {
+                return alert('QR Code gagal dibuat!');
+              }
+              const a = document.createElement("a");
+              a.href = url;
+              a.download = `HelpdeskICT-${name.replace(/\s+/g, "_")}-${JSON.parse(room).name}.png`;
+              document.body.appendChild(a);
+              a.click();
+              document.body.removeChild(a);
+            });
+          }
+        }
       }
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `${data.replace(/\s+/g, "_")}.png`;
-      document.body.appendChild(a);
-      a.click();
-      document.body.removeChild(a);
-    });
+    } catch (error) {
+      console.error("Error fetching QR code:", error);
+      if (error.response) {
+        console.error("Response Data:", error.response.data);
+        console.error("Status Code:", error.response.status);
+        console.error("Headers:", error.response.headers);
+        alert(`Terjadi kesalahan! Server mengembalikan kode ${error.response.status}`);
+      } else if (error.request) {
+        console.error("No response received:", error.request);
+        alert("Gagal menghubungi server! Periksa koneksi internet Anda.");
+      } else {
+        console.error("Error Message:", error.message);
+        alert("Terjadi kesalahan tidak terduga!");
+      }
+    }
   }
 
   const autoLogin = () => {
-    if(username && password && token) {
+    if (username && password && token) {
       setTimeout(() => {
         loginFunc();
       }, 2000);
@@ -526,7 +570,7 @@ const Admin = () => {
                 <button type='button' onClick={scrollToRef} className={`${connection ? 'text-emerald-500' : 'text-red-500'} cursor-pointer`}>
                   <i className="fi fi-rr-wifi flex text-sm"></i>
                 </button>
-                <button onClick={removeToken} type='button' className='cursor-pointer text-sky-700 hover:text-sky-800'>
+                <button onClick={removeToken} type='button' className='cursor-pointer text-red-700 hover:text-red-800'>
                   <i className="fi fi-rr-key flex text-sm"></i>
                 </button>
                 <a href={`${import.meta.env.VITE_BACKEND}/chats/download/${activeRoom.token}`} target='_blank' className='cursor-pointer text-sky-700 hover:text-sky-800'>

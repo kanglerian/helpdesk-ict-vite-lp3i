@@ -33,12 +33,9 @@ const Students = () => {
   const [logged, setLogged] = useState(false);
   const [username, setUsername] = useState(searchParams.get("username") || '');
   const [password, setPassword] = useState(searchParams.get("password") || '');
-  const [token, setToken] = useState(searchParams.get("token"));
+  const [token, setToken] = useState(searchParams.get("token") || '');
   const [message, setMessage] = useState('');
   const [canSendMessage, setCanSendMessage] = useState(true);
-  const [moveButton, setMoveButton] = useState(true);
-  const [messageButton, setMessageButton] = useState(true);
-  const [finishButton, setFinishButton] = useState(true);
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
 
@@ -46,7 +43,7 @@ const Students = () => {
     const queryRoomParams = searchParams.get("room");
     const queryTokenParams = searchParams.get("token");
     const roomParams = queryRoomParams || 'anonymous';
-    const tokenParams = queryTokenParams || '46150';
+    const tokenParams = queryTokenParams;
     const room = localStorage.getItem('HELPDESK:room');
     const account = localStorage.getItem('HELPDESK:account');
     setClient(roomParams)
@@ -164,39 +161,32 @@ const Students = () => {
 
   const sendMessage = async (e) => {
     e.preventDefault();
-    if (moveButton) {
-      setMoveButton(false);
-      setMessageButton(false);
-      setFinishButton(false);
-    } else {
-      const accountStringify = localStorage.getItem('HELPDESK:account');
-      const roomStringify = localStorage.getItem('HELPDESK:room');
-      if (accountStringify && roomStringify) {
-        const accountParse = JSON.parse(accountStringify);
-        const roomParse = JSON.parse(roomStringify);
-        const dataChat = {
-          client: client,
-          name_room: roomParse.name,
-          token: roomParse.token,
-          not_save: roomParse.secret,
-          uuid_sender: accountParse.uuid,
-          name_sender: accountParse.name,
-          role_sender: accountParse.role,
-          message: message,
-          reply: null,
-          date: new Date(),
-          latitude: latitude,
-          longitude: longitude
-        }
-        setCanSendMessage(false);
-        socket.emit('message', dataChat)
-        setMessage('');
-        setMessageButton(true);
-        setFinishButton(true);
-        setTimeout(() => {
-          setCanSendMessage(true);
-        }, 7000);
+
+    const accountStringify = localStorage.getItem('HELPDESK:account');
+    const roomStringify = localStorage.getItem('HELPDESK:room');
+    if (accountStringify && roomStringify) {
+      const accountParse = JSON.parse(accountStringify);
+      const roomParse = JSON.parse(roomStringify);
+      const dataChat = {
+        client: client,
+        name_room: roomParse.name,
+        token: roomParse.token,
+        not_save: roomParse.secret,
+        uuid_sender: accountParse.uuid,
+        name_sender: accountParse.name,
+        role_sender: accountParse.role,
+        message: message,
+        reply: null,
+        date: new Date(),
+        latitude: latitude,
+        longitude: longitude
       }
+      setCanSendMessage(false);
+      socket.emit('message', dataChat)
+      setMessage('');
+      setTimeout(() => {
+        setCanSendMessage(true);
+      }, 7000);
     }
   }
 
@@ -217,7 +207,7 @@ const Students = () => {
   }
 
   const autoLogin = () => {
-    if(username && password && token) {
+    if (username && password && token) {
       setTimeout(() => {
         loginFunc();
       }, 2000);
@@ -358,17 +348,13 @@ const Students = () => {
         delay: 0.8,
         ease: "elastic.out(1,0.3)"
       });
-      gsap.timeline()
-        .from('#container-message', {
-          duration: 3,
-          y: -2000,
-          rotation: -180,
-          delay: 1.1,
-          ease: "elastic.out(1,0.3)"
-        })
-        .to('#container-message', {
-          rotation: 3
-        });
+      gsap.from('#container-message', {
+        duration: 3,
+        y: -2000,
+        rotation: -180,
+        delay: 1.1,
+        ease: "elastic.out(1,0.3)"
+      });
     }
 
     if (!logged && containerAuth.current) {
@@ -500,7 +486,7 @@ const Students = () => {
                 <button type='button' onClick={scrollToRef} className={`${connection ? 'text-emerald-500' : 'text-red-500'} cursor-pointer`}>
                   <i className="fi fi-rr-wifi flex text-sm"></i>
                 </button>
-                <button onClick={removeToken} type='button' className='cursor-pointer text-sky-700 hover:text-sky-800'>
+                <button onClick={removeToken} type='button' className='cursor-pointer text-red-700 hover:text-red-800'>
                   <i className="fi fi-rr-key flex text-sm"></i>
                 </button>
               </div>
@@ -542,13 +528,7 @@ const Students = () => {
 
             <div id='container-message' className='fixed bg-white border-b-8 border-sky-800 p-5 drop-shadow-xl w-11/12 md:w-full max-w-lg mx-auto bottom-3 left-0 right-0 rounded-3xl space-y-3 flex flex-col items-center justify-center rotate-3'>
               <p className='text-sm font-medium text-gray-700'>
-                {
-                  messageButton ? (
-                    'Belok dikit gapapa 🤣'
-                  ) : (
-                    'Eits, klik lagi! 🤣'
-                  )
-                }
+                Belok dikit gapapa 🤣
               </p>
               <form onSubmit={sendMessage} className="w-full flex gap-2 max-w-lg mx-auto">
                 <div className="relative w-full">
@@ -559,7 +539,7 @@ const Students = () => {
                 </div>
                 {
                   canSendMessage &&
-                  <button type="submit" className={`relative flex gap-2 items-center justify-center py-2.5 px-4 text-sm font-medium text-white ${finishButton ? 'top-0' : 'top-[-60px]'} rounded-xl bg-sky-600 hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-blue-300`}>
+                  <button type="submit" className={`relative flex gap-2 items-center justify-center py-2.5 px-4 text-sm font-medium text-white rounded-xl bg-sky-600 hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-blue-300`}>
                     <i className="flex fi fi-rr-paper-plane"></i>
                   </button>
                 }
