@@ -526,10 +526,7 @@ const Students = () => {
               ))}
             </div>
 
-            <div id='container-message' className='fixed bg-white border-b-8 border-sky-800 p-5 drop-shadow-xl w-11/12 md:w-full max-w-lg mx-auto bottom-3 left-0 right-0 rounded-3xl space-y-3 flex flex-col items-center justify-center rotate-3'>
-              <p className='text-sm font-medium text-gray-700'>
-                Belok dikit gapapa 🤣
-              </p>
+            <div id='container-message' className='fixed bg-white border-b-8 border-sky-800 p-5 drop-shadow-xl w-11/12 md:w-full max-w-lg mx-auto bottom-3 left-0 right-0 rounded-3xl space-y-3 flex flex-col items-center justify-center'>
               <form onSubmit={sendMessage} className="w-full flex gap-2 max-w-lg mx-auto">
                 <div className="relative w-full">
                   <div className="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none">
