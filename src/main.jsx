@@ -10,10 +10,15 @@ import Students from './pages/Students';
 import Dashboard from './pages/Dashboard';
 import Admin from './pages/Admin';
 import License from './pages/License';
+import Auth from './pages/Auth';
 
 const router = createBrowserRouter([
   {
     path: "/",
+    element: <Auth/>,
+  },
+  {
+    path: "/student",
     element: <Students/>,
   },
   {
