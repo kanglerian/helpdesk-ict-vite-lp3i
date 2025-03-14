@@ -613,28 +613,6 @@ const Admin = () => {
                 </div>
               </button>
             ))}
-
-            {/* <button
-              type="button"
-              onClick={manualRoom}
-              className="cursor-pointer w-auto flex flex-col items-center space-y-1 p-1 md:p-0"
-            >
-              <div className="w-full flex flex-col items-center justify-center gap-1">
-                <div className="w-10 h-10 bg-cover bg-center" style={{ backgroundImage: `url(${Custom})` }}></div>
-                <h4 className="text-xs text-gray-800 font-medium">Manual</h4>
-              </div>
-            </button>
-
-            <button
-              type="button"
-              onClick={secretRoom}
-              className="cursor-pointer w-auto flex flex-col items-center space-y-1 p-1 md:p-0"
-            >
-              <div className="w-full flex flex-col items-center justify-center gap-1">
-                <div className="w-10 h-10 bg-cover bg-center" style={{ backgroundImage: `url(${Secret})` }}></div>
-                <h4 className="text-xs text-gray-800 font-medium">Secret</h4>
-              </div>
-            </button> */}
           </div>
         )
       }
