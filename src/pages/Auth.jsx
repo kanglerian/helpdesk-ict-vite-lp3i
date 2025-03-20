@@ -278,7 +278,7 @@ const Auth = () => {
           <button disabled={isSubmitting} type="submit" className="w-full flex gap-2 items-center justify-center py-2.5 px-3 text-sm font-medium text-white bg-sky-600 rounded-xl hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-all ease-in-out cursor-pointer">
             <span>Sign In</span>
           </button>
-          <a href={`${import.meta.env.VITE_BACKEND}/download-apk`} id='google' download="helpdesk.apk">
+          <a href={`${import.meta.env.VITE_BACKEND}/download-apk`} id='google'>
             <img src={Google} alt="Google Play" className='w-32 bg-white/40 rounded-lg' />
           </a>
         </form>
