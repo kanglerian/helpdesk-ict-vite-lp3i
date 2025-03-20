@@ -6,6 +6,7 @@ import gsap from 'gsap';
 import { useGSAP } from '@gsap/react';
 import chatAnimation from "../assets/chat-animation.json";
 import Doodle from '../assets/doodle.png'
+import Google from '../assets/google.png'
 import { socket } from '../socket'
 import { jwtDecode } from 'jwt-decode';
 
@@ -99,7 +100,7 @@ const Auth = () => {
         },
         withCredentials: true,
       });
-      
+
       const dataUser = responseUser.data;
 
       const dataHelpdeskRoom = {
@@ -234,7 +235,7 @@ const Auth = () => {
         duration: 1,
         delay: 0.5,
       });
-      gsap.fromTo('#copyright', {
+      gsap.fromTo('#google', {
         opacity: 0,
         y: -200,
         transformOrigin: 'center top'
@@ -244,13 +245,23 @@ const Auth = () => {
         duration: 1,
         delay: 0.6,
       });
+      gsap.fromTo('#copyright', {
+        opacity: 0,
+        y: -200,
+        transformOrigin: 'center top'
+      }, {
+        opacity: 1,
+        y: 0,
+        duration: 1,
+        delay: 0.7,
+      });
     }
   }, [containerAuth]);
 
   return (
     <main ref={containerAuth} className='relative bg-sky-800 flex flex-col items-center justify-center h-screen'>
       <div className="absolute inset-0 bg-cover bg-center opacity-10 z-0" style={{ backgroundImage: `url(${Doodle})` }}></div>
-      <Lottie animationData={chatAnimation} loop={true} className='w-1/3 md:w-1/6' />
+      <Lottie animationData={chatAnimation} loop={true} className='w-40' />
       <div className='text-center space-y-5 z-10'>
         <div className='space-y-1'>
           <h2 id="auth-title" className='font-bold text-2xl text-white'>Helpdesk Chat <span className='capitalize'>{searchParams.get("room")}</span></h2>
@@ -267,6 +278,9 @@ const Auth = () => {
           <button disabled={isSubmitting} type="submit" className="w-full flex gap-2 items-center justify-center py-2.5 px-3 text-sm font-medium text-white bg-sky-600 rounded-xl hover:bg-sky-700 focus:ring-4 focus:outline-none focus:ring-blue-300 transition-all ease-in-out cursor-pointer">
             <span>Sign In</span>
           </button>
+          <a href="#" id='google' download="helpdesk.apk">
+            <img src={Google} alt="Google Play" className='w-32 bg-white/40 rounded-lg' />
+          </a>
         </form>
         <Link to={`/license`} target='_blank' id='copyright' className='block text-xs text-sky-400'>© {new Date().getFullYear()} Lerian Febriana. All Rights Reserved.</Link>
       </div>
